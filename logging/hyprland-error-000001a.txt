@@ -1,0 +1,89 @@
+Jan 06 01:32:05 NixOS-Ava systemd[3569]: Reached target [01;31m[KHyprland[m[K compositor session.
+Jan 06 01:32:05 NixOS-Ava polkitd[4489]: Registered Authentication Agent for unix-session:2 (system bus name :1.20 [/nix/store/92hxznaa78h9fphzi3lgj205hb0jlhcl-hyprpolkitagent-0.1.3/libexec/hyprpolkitagent], object path /org/[01;31m[Khyprland[m[K/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_lock_notifier_v1 v1
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]    > Bound to [01;31m[Khyprland[m[K_lock_notifier_v1 v1
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_focus_grab_manager_v1 v1
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_toplevel_export_manager_v1 v2
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_toplevel_mapping_manager_v1 v1
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_global_shortcuts_manager_v1 v1
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_ctm_control_manager_v1 v2
+Jan 06 01:32:06 NixOS-Ava hypridle[4460]: [LOG]   | got iface: [01;31m[Khyprland[m[K_surface_manager_v1 v2
+Jan 06 01:32:06 NixOS-Ava dbus-daemon[3589]: [session uid=1000 pid=3589] Activating via systemd: service name='org.freedesktop.impl.portal.desktop.[01;31m[Khyprland[m[K' unit='xdg-desktop-portal-[01;31m[Khyprland[m[K.service' requested by ':1.9' (uid=1000 pid=4497 comm="/nix/store/b6nldfybpn18hndvyxxilrj0ahh1djcx-xdg-de" label="unconfined")
+Jan 06 01:32:06 NixOS-Ava systemd[3569]: Starting Portal service ([01;31m[KHyprland[m[K implementation)...
+Jan 06 01:32:06 NixOS-Ava dbus-daemon[3589]: [session uid=1000 pid=3589] Successfully activated service 'org.freedesktop.impl.portal.desktop.[01;31m[Khyprland[m[K'
+Jan 06 01:32:06 NixOS-Ava systemd[3569]: Started Portal service ([01;31m[KHyprland[m[K implementation).
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] Initializing xdph...
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] XDG_CURRENT_DESKTOP set to [01;31m[KHyprland[m[K
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] Gathering exported interfaces
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_seat (ver 9)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_data_device_manager (ver 3)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_compositor (ver 6)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_subcompositor (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_shm (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_viewporter (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_tearing_control_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_fractional_scale_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zxdg_output_manager_v1 (ver 3)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_cursor_shape_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_idle_inhibit_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_relative_pointer_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zxdg_decoration_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_alpha_modifier_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_gamma_control_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: ext_foreign_toplevel_list_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_pointer_gestures_v1 (ver 3)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_foreign_toplevel_manager_v1 (ver 3)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [toplevel] (activate) locks: 1
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_keyboard_shortcuts_inhibit_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_text_input_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_text_input_manager_v3 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_pointer_constraints_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_output_power_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: xdg_activation_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: ext_idle_notifier_v1 (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_lock_notifier_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: ext_session_lock_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_input_method_manager_v2 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_virtual_keyboard_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_virtual_pointer_manager_v1 (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_output_manager_v1 (ver 4)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: org_kde_kwin_server_decoration_manager (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_focus_grab_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_tablet_manager_v2 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_layer_shell_v1 (ver 5)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_presentation (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: xdg_wm_base (ver 7)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_data_control_manager_v1 (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_primary_selection_device_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: xwayland_shell_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwlr_screencopy_manager_v1 (ver 3)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [pipewire] connected
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [screencopy] init successful
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_toplevel_export_manager_v1 (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_toplevel_mapping_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [toplevel mapping] registered manager
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_global_shortcuts_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [globalshortcuts] registered
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: xdg_wm_dialog_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_single_pixel_buffer_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_security_context_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_ctm_control_manager_v1 (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: [01;31m[Khyprland[m[K_surface_manager_v1 (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_content_type_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: xdg_toplevel_tag_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: xdg_system_bell_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: ext_workspace_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: ext_data_control_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_pointer_warp_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_fifo_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_commit_timing_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_color_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_drm_lease_device_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wp_linux_drm_syncobj_manager_v1 (ver 1)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_drm (ver 2)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: zwp_linux_dmabuf_v1 (ver 5)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG]  | Got interface: wl_output (ver 4)
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [core] dmabufFeedbackMainDevice
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] Found output name HDMI-A-1
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [toplevel] Activated, bound to 1, toplevels: 0
+Jan 06 01:32:06 NixOS-Ava xdg-desktop-portal-[01;31m[Khyprland[m[K[4603]: [LOG] [screencopy] Registered for toplevel export
