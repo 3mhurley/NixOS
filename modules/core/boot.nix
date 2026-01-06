@@ -22,9 +22,9 @@
       grub = {
         enable = true;
         # version = 2;
-        # devices = ["nodev"];
-        device = "/dev/sda";
-        efiSupport = false;
+        devices = ["nodev"];
+        # device = "/dev/sda";
+        efiSupport = true;
         # efiInstallAsRemovable = true;
         # extraEntriesBeforeNixOS = true;
         # extraEntries = ''

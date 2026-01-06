@@ -1,0 +1,13 @@
+
+[0;32mNixOS Configuration Host Selection[0m
+
+Available hosts:
+  1) Default
+  2) NixOS-Ava
+  n) Create new host
+
+[0;32mUsing host: Default[0m
+
+[0;32mGenerating hardware configuration...[0m
+
+[0;32mBuilding NixOS configuration for host: Default[0m
