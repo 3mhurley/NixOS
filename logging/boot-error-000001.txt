@@ -1,0 +1,9 @@
+Jan 06 01:25:14 NixOS-Ava kernel: intel_oc_wdt INTC1099:00: probe with driver intel_oc_wdt failed with error -13
+Jan 06 01:25:15 NixOS-Ava kernel: 
+Jan 06 01:25:16 NixOS-Ava kernel: ACPI BIOS Error (bug): Failure creating named object [\_SB.PC00.PEG1.PEGP._DSM.USRG], AE_ALREADY_EXISTS (20250807/dsfield-184)
+Jan 06 01:25:16 NixOS-Ava kernel: ACPI Error: AE_ALREADY_EXISTS, CreateBufferField failure (20250807/dswload2-477)
+Jan 06 01:25:16 NixOS-Ava kernel: ACPI Error: Aborting method \_SB.PC00.PEG1.PEGP._DSM due to previous error (AE_ALREADY_EXISTS) (20250807/psparse-529)
+Jan 06 01:25:17 NixOS-Ava kernel: ACPI BIOS Error (bug): Failure creating named object [\_SB.PC00.PEG1.PEGP._DSM.USRG], AE_ALREADY_EXISTS (20250807/dsfield-184)
+Jan 06 01:25:17 NixOS-Ava kernel: ACPI Error: AE_ALREADY_EXISTS, CreateBufferField failure (20250807/dswload2-477)
+Jan 06 01:25:17 NixOS-Ava kernel: ACPI Error: Aborting method \_SB.PC00.PEG1.PEGP._DSM due to previous error (AE_ALREADY_EXISTS) (20250807/psparse-529)
+Jan 06 01:26:06 NixOS-Ava login[3514]: gkr-pam: unable to locate daemon control file
