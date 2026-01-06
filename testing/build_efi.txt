@@ -6,12 +6,12 @@ Available hosts:
   2) NixOS-Ava
   n) Create new host
 
-[0;32mUsing host: Default[0m
+[0;32mUsing host: NixOS-Ava[0m
 
 [0;32mGenerating hardware configuration...[0m
 
-[0;32mBuilding NixOS configuration for host: Default[0m
-/nix/store/kf4h8yy5fx6qs3gqy6xp3ix52k38851d-nixos-system-NixOS-Ava-26.05.20251215.1306659
+[0;32mBuilding NixOS configuration for host: NixOS-Ava[0m
+/nix/store/8wcx3qcr1s6had1f1493dgwj7sn7y19l-nixos-system-NixOS-Ava-26.05.20251215.1306659
 
 [0;32m╔═══════════════════════════════════════════════════════════════════════╗[0m
 [0;32m║                                                                       ║[0m
