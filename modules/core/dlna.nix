@@ -2,8 +2,8 @@
 {
 
   services.minidlna = {
-    enable = true;
-    openFirewall = true;
+    enable = false;
+    openFirewall = false;
     settings = {
       friendly_name = "NixOS-DLNA";
       media_dir = [

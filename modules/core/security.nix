@@ -17,7 +17,7 @@
   boot = {
     kernel.sysctl = {
       # TCP hardening
-      "kernel.sysrq" = 0; # allows performing low-level commands.
+      "kernel.sysrq" = 244; # allows performing low-level commands.
       "net.ipv4.conf.default.rp_filter" = 1;
       "net.ipv4.conf.all.rp_filter" = 1;
       "net.ipv4.conf.default.send_redirects" = 0;
@@ -30,7 +30,7 @@
       "net.ipv4.tcp_rfc1337" = 1;
 
       # TCP optimization
-      "net.ipv4.tcp_fastopen" = 0; # 3
+      "net.ipv4.tcp_fastopen" = 3; # 3
       "net.ipv4.tcp_congestion_control" = "bbr";
       "net.ipv4.tcp_low_latency" = "1";
       "net.ipv4.tcp_fin_timeout" = "10";

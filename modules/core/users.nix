@@ -57,7 +57,7 @@ in
         "libvirtd"
         "kvm"
         "docker"
-        "disk"
+        # "disk"
         "adbusers"
         "lp"
         "scanner"
