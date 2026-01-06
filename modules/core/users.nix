@@ -61,7 +61,7 @@ in
         "adbusers"
         "lp"
         "scanner"
-        "vboxusers" # Virtual Box
+        # "vboxusers" # Virtual Box
       ];
       shell = pkgs.${shell};
       ignoreShellProgramCheck = true;

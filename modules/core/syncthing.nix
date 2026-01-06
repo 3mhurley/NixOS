@@ -4,7 +4,7 @@ let
 in
 {
   services.syncthing = {
-    enable = true;
+    enable = false;
     user = "${username}";
     dataDir = "/home/${username}";
     configDir = "/home/${username}/.config/syncthing";
