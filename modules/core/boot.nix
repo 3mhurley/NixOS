@@ -21,11 +21,12 @@
       timeout = null; # Display bootloader indefinitely until user selects OS
       grub = {
         enable = true;
-        version = 2;
-        devices = ["nodev"];
-        efiSupport = true;
+        # version = 2;
+        # devices = ["nodev"];
+        device = "/dev/sda";
+        efiSupport = false;
         # efiInstallAsRemovable = true;
-        extraEntriesBeforeNixOS = true;
+        # extraEntriesBeforeNixOS = true;
         # extraEntries = ''
         #   menuentry "Reboot" {
         #      reboot
