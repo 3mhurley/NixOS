@@ -1,0 +1,11 @@
+Jan 06 00:22:11 NixOS-Ava kernel: intel_oc_wdt INTC1099:00: probe with driver intel_oc_wdt failed with error -13
+Jan 06 00:22:12 NixOS-Ava kernel: 
+Jan 06 00:22:14 NixOS-Ava kernel: ACPI BIOS Error (bug): Failure creating named object [\_SB.PC00.PEG1.PEGP._DSM.USRG], AE_ALREADY_EXISTS (20250807/dsfield-184)
+Jan 06 00:22:14 NixOS-Ava kernel: ACPI Error: AE_ALREADY_EXISTS, CreateBufferField failure (20250807/dswload2-477)
+Jan 06 00:22:14 NixOS-Ava kernel: ACPI Error: Aborting method \_SB.PC00.PEG1.PEGP._DSM due to previous error (AE_ALREADY_EXISTS) (20250807/psparse-529)
+Jan 06 00:22:14 NixOS-Ava kernel: ACPI BIOS Error (bug): Failure creating named object [\_SB.PC00.PEG1.PEGP._DSM.USRG], AE_ALREADY_EXISTS (20250807/dsfield-184)
+Jan 06 00:22:14 NixOS-Ava kernel: ACPI Error: AE_ALREADY_EXISTS, CreateBufferField failure (20250807/dswload2-477)
+Jan 06 00:22:14 NixOS-Ava kernel: ACPI Error: Aborting method \_SB.PC00.PEG1.PEGP._DSM due to previous error (AE_ALREADY_EXISTS) (20250807/psparse-529)
+Jan 06 00:23:42 NixOS-Ava systemd[1]: Timed out waiting for device /dev/disk/by-uuid/01DA12C1CBDE9100.
+Jan 06 00:23:42 NixOS-Ava systemd[1]: Timed out waiting for device /dev/disk/by-uuid/f6f6d68c-68f8-4c50-8155-105a22b9ff35.
+Jan 06 00:25:51 NixOS-Ava login[3540]: gkr-pam: unable to locate daemon control file

@@ -1,0 +1,2 @@
+Jan 06 00:23:42 NixOS-Ava systemd[1]: Dependency failed for /[01;31m[Kmnt/games[m[K.
+Jan 06 00:23:42 NixOS-Ava systemd[1]: Dependency failed for /[01;31m[Kmnt/work[m[K.
