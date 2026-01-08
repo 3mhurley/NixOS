@@ -6,5 +6,6 @@
     protonvpn-gui # VPN
     github-desktop
     # pokego # Overlayed
+    claude-code
   ];
 }
