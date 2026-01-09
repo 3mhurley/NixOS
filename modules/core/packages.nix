@@ -39,11 +39,11 @@
     unrar # Tool For Handling .rar Files
     unzip # Tool For Handling .zip Files
     # aider-chat # AI in terminal (Optional: Client only)
-    # cmatrix # Matrix Movie Effect In Terminal
+    cmatrix # Matrix Movie Effect In Terminal
     # cowsay # Great Fun Terminal Program
     # duf # Utility For Viewing Disk Usage In Terminal
     # dysk # Disk space util nice formattting
-    # ffmpeg # Terminal Video / Audio Editing
+    ffmpeg # Terminal Video / Audio Editing
     # gemini-cli # CLI AI client ONLY (optional)
     # glxinfo # needed for inxi diag util
     # inxi # CLI System Information Tool
@@ -51,12 +51,13 @@
     # libnotify # For Notifications
     # lolcat # Add Colors To Your Terminal Command Output
     # lshw # Detailed Hardware Information
-    # mpv # Incredible Video Player
+    mpv # Incredible Video Player
     # ncdu # Disk Usage Analyzer With Ncurses Interface
     # nixfmt-rfc-style # Nix Formatter
     # nwg-displays # configure monitor configs via GUI
     # onefetch # provides zsaneyos build info on current system
-    # pavucontrol # For Editing Audio Levels & Devices
+    pavucontrol # For Editing Audio Levels & Devices
+    pulseaudio # For pactl and other PulseAudio CLI tools (works with PipeWire)
     # pciutils # Collection Of Tools For Inspecting PCI Devices
     # picard # For Changing Music Metadata & Getting Cover Art
     # pkg-config # Wrapper Script For Allowing Packages To Get Info On Others

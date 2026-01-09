@@ -1,12 +1,27 @@
 { pkgs, ... }:
+let
+  discordBase = pkgs.discord.override {
+    withVencord = true;
+  };
+  # Force Discord to use XWayland for keybind support
+  discordXwayland = pkgs.writeShellScriptBin "discord" ''
+    exec env ELECTRON_OZONE_PLATFORM_HINT= NIXOS_OZONE_WL= \
+      ${discordBase}/bin/discord --ozone-platform=x11 "$@"
+  '';
+  # Combine wrapper with desktop files from original package
+  discordWrapped = pkgs.symlinkJoin {
+    name = "discord";
+    paths = [ discordXwayland discordBase ];
+    postBuild = ''
+      rm $out/bin/discord
+      cp ${discordXwayland}/bin/discord $out/bin/discord
+    '';
+  };
+in
 {
   home-manager.sharedModules = [
     (_: {
-      home.packages = with pkgs; [
-        (discord.override {
-          withVencord = true;
-        })
-      ];
+      home.packages = [ discordWrapped ];
       xdg.configFile."Vencord/themes/catppuccin-mocha.css".text = ''
         /**
         * @name Catppuccin Mocha

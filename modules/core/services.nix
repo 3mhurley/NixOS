@@ -53,6 +53,26 @@
           "default.clock.max-quantum" = 256;
         };
       };
+      # Line In loopback - routes audio from Line In to default output
+      extraConfig.pipewire."93-line-in-loopback" = {
+        "context.modules" = [
+          {
+            name = "libpipewire-module-loopback";
+            args = {
+              "capture.props" = {
+                "node.name" = "linein-capture";
+                "audio.position" = [ "FL" "FR" ];
+                "node.target" = "alsa_input.pci-0000_00_1f.3.analog-stereo";
+              };
+              "playback.props" = {
+                "node.name" = "linein-playback";
+                "audio.position" = [ "FL" "FR" ];
+                # Plays to default output (iFi DAC)
+              };
+            };
+          }
+        ];
+      };
       extraConfig.pipewire-pulse."92-low-latency" = {
         context.modules = [
           {
