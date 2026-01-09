@@ -19,6 +19,7 @@
     killall # For Killing All Instances Of Programs
     lm_sensors # Used For Getting Hardware Temps
     gnome-disk-utility # Disk Partitioning and Mounting Utility
+    os-prober # Detect other operating systems for GRUB
     rclone # Cloning Utility
     jq # Json Formatting Utility
     bibata-cursors
