@@ -7,5 +7,6 @@
     github-desktop
     # pokego # Overlayed
     claude-code
+    gimp
   ];
 }
