@@ -66,8 +66,9 @@
               };
               "playback.props" = {
                 "node.name" = "linein-playback";
+                "node.description" = "Line In Loopback";
+                "media.class" = "Stream/Output/Audio";
                 "audio.position" = [ "FL" "FR" ];
-                # Plays to default output (iFi DAC)
               };
             };
           }
