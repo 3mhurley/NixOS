@@ -217,10 +217,12 @@ in
                 "col.border_locked_inactive" = "rgba(b4befecc) rgba(6c7086cc) 45deg";
               };
               layerrule = [
-                "blur, ignorealpha, namespace:rofi"
-                "blur, ignorealpha, namespace:swaync-control-center"
-                "blur, ignorealpha, namespace:swaync-notification-window"
-                # "dimaround, namespace:swaync-control-center"
+                "blur on, match:namespace rofi"
+                "ignore_alpha 0.7, match:namespace rofi"
+                "blur on, match:namespace swaync-control-center"
+                "blur on, match:namespace swaync-notification-window"
+                "ignore_alpha 0.7, match:namespace swaync-control-center"
+                "ignore_alpha 0.7, match:namespace swaync-notification-window"
               ];
               animations = {
                 enabled = true;
