@@ -8,5 +8,6 @@
     # pokego # Overlayed
     claude-code
     gimp
+    rusty-path-of-building
   ];
 }
