@@ -216,22 +216,13 @@ in
                 "col.border_locked_active" = "rgba(ca9ee6ff) rgba(f2d5cfff) 45deg";
                 "col.border_locked_inactive" = "rgba(b4befecc) rgba(6c7086cc) 45deg";
               };
-layerrule {
-  name = layerrule-1
-  [ = on
-}
-
-                "blur, rofi"
-                "ignorezero, rofi"
-                "ignorealpha 0.7, rofi"
-
-                "blur, swaync-control-center"
-                "blur, swaync-notification-window"
-                "ignorezero, swaync-control-center"
-                "ignorezero, swaync-notification-window"
-                "ignorealpha 0.7, swaync-control-center"
-                # "ignorealpha 0.8, swaync-notification-window"
-                # "dimaround, swaync-control-center"
+              layerrule = [
+                "blur on, match:namespace rofi"
+                "ignore_alpha 0.7, match:namespace rofi"
+                "blur on, match:namespace swaync-control-center"
+                "blur on, match:namespace swaync-notification-window"
+                "ignore_alpha 0.7, match:namespace swaync-control-center"
+                "ignore_alpha 0.7, match:namespace swaync-notification-window"
               ];
               animations = {
                 enabled = true;
@@ -289,6 +280,7 @@ layerrule {
                 new_on_top = true;
                 mfact = 0.5;
               };
+              windowrule = [
                 #"noanim, class:^(Rofi)$
                 "tile,title:(.*)(Godot)(.*)$"
                 # "workspace 1, class:^(kitty|Alacritty|org.wezfurlong.wezterm)$"
