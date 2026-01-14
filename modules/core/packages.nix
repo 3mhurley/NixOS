@@ -4,7 +4,6 @@
   programs = {
     fuse.userAllowOther = true;
     mtr.enable = true;
-    adb.enable = true;
     hyprlock.enable = true;
     gnupg.agent = {
       enable = true;
@@ -29,6 +28,7 @@
     kdePackages.qtvirtualkeyboard # Sddm Dependency
     fzf # Fuzzy Finder
     fd # Better Find
+    android-tools # ADB and fastboot
     git # Git
     gh # Github Authentication Client
     libjxl # Support for JXL Images
