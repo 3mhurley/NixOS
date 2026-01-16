@@ -189,7 +189,7 @@ in
               general = {
                 gaps_in = 4;
                 gaps_out = 9;
-                border_size = 2;
+                border_size = 0;
                 "col.active_border" = "rgba(ca9ee6ff) rgba(f2d5cfff) 45deg";
                 "col.inactive_border" = "rgba(b4befecc) rgba(6c7086cc) 45deg";
                 resize_on_border = true;
@@ -356,7 +356,7 @@ in
                 "tag +games, match:class (osu!)"
 
                 # Games
-                "sync_fullscreen on, fullscreen on, border_size 1, no_shadow on, no_blur on, no_anim on, match:tag games"
+                "sync_fullscreen on, center on, border_size 1, no_shadow on, no_blur on, no_anim on, match:tag games"
 
                 "float on, match:class ^(qt5ct)$"
                 "float on, match:class ^(nwg-look)$"
