@@ -354,6 +354,7 @@ in
                 "tag +games, match:class ^(gamescope)$"
                 "tag +games, match:class (Waydroid)"
                 "tag +games, match:class (osu!)"
+                "tag +games, match:class ^(HytaleClient)$"
 
                 # Games
                 "sync_fullscreen on, center on, border_size 1, no_shadow on, no_blur on, no_anim on, match:tag games"

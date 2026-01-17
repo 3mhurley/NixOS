@@ -6,7 +6,7 @@
     protonvpn-gui # VPN
     github-desktop
     # pokego # Overlayed
-    claude-code
+    # claude-code
     gimp
     rusty-path-of-building
   ];
