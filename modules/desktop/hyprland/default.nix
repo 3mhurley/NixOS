@@ -348,8 +348,6 @@ in
                 # Float and pin Picture-in-Picture in browsers
                 "float on, pin on, match:title ^(Picture-in-Picture)$, match:class ^(zen|zen-beta|floorp|firefox)$"
 
-                "tag +games, match:content game"
-                "tag +games, match:content game"
                 "tag +games, match:class ^(steam_app.*|steam_app_d+)$"
                 "tag +games, match:class ^(gamescope)$"
                 "tag +games, match:class (Waydroid)"
