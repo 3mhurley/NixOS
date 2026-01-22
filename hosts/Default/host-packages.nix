@@ -5,6 +5,7 @@
     ludusavi # For game saves
     protonvpn-gui # VPN
     github-desktop
+    protonplus
     # pokego # Overlayed
   ];
 }
