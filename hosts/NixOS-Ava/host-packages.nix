@@ -9,5 +9,7 @@
     # claude-code
     gimp
     rusty-path-of-building
+    protonup-qt
+    protonplus
   ];
 }
