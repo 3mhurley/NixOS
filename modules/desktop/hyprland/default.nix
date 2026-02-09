@@ -355,7 +355,7 @@ in
                 "tag +games, match:class ^(HytaleClient)$"
 
                 # Games
-                "sync_fullscreen on, center on, border_size 1, no_shadow on, no_blur on, no_anim on, match:tag games"
+                "sync_fullscreen on, center on, bordersize 0, no_shadow on, no_blur on, no_anim on, match:tag games"
 
                 "float on, match:class ^(qt5ct)$"
                 "float on, match:class ^(nwg-look)$"
