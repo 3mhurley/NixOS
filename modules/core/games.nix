@@ -22,7 +22,6 @@
     # ryujinx
     # prismlauncher
 
-    steam-run
     wineWow64Packages.staging
     gamescope
   ];
