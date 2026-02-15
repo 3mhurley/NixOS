@@ -1,3 +1,4 @@
+# NOTE: Not imported directly. Both hosts list core modules individually in their configuration.nix.
 { ... }:
 {
   imports = [

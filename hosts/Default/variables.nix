@@ -19,7 +19,14 @@
   games = true; # Enable/Disable gaming module
 
   # Hardware
-  hostname = "NixOS-Ava";
+  hostname = "NixOS-Default";
+
+  # Network QoS
+  uploadSpeed = "285Mbit"; # 95% of actual upload
+  downloadSpeed = "2000Mbit"; # 95% of actual download
+
+  # Audio
+  alsaDevice = "alsa_input.pci-0000_00_1f.3.analog-stereo";
   videoDriver = "nvidia"; # nvidia, amdgpu, intel
 
   # Localization

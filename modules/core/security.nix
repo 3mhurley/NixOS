@@ -17,7 +17,7 @@
   boot = {
     kernel.sysctl = {
       # TCP hardening
-      "kernel.sysrq" = 244; # allows performing low-level commands.
+      "kernel.sysrq" = 16; # allow only safe reboot via SysRq+B
       "net.ipv4.conf.default.rp_filter" = 1;
       "net.ipv4.conf.all.rp_filter" = 1;
       "net.ipv4.conf.default.send_redirects" = 0;
