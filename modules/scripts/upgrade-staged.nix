@@ -33,10 +33,10 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
 
   echo
   echo "Batch A: core platform"
-  run nix flake lock --update-input nixpkgs
-  run nix flake lock --update-input nixpkgs-stable
-  run nix flake lock --update-input home-manager
-  run nix flake lock --update-input nix-index-database
+  run nix flake update nixpkgs
+  run nix flake update nixpkgs-stable
+  run nix flake update home-manager
+  run nix flake update nix-index-database
   run nix flake check --no-build
   run sudo nixos-rebuild boot --flake ".#$HOST"
   echo "Reboot recommended now for kernel validation."
@@ -44,24 +44,24 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
 
   echo
   echo "Batch B: module ecosystem"
-  run nix flake lock --update-input nix-flatpak
-  run nix flake lock --update-input plasma-manager
-  run nix flake lock --update-input zen-browser
-  run nix flake lock --update-input spicetify-nix
-  run nix flake lock --update-input nixvim
-  run nix flake lock --update-input nvchad4nix
-  run nix flake lock --update-input nur
+  run nix flake update nix-flatpak
+  run nix flake update plasma-manager
+  run nix flake update zen-browser
+  run nix flake update spicetify-nix
+  run nix flake update nixvim
+  run nix flake update nvchad4nix
+  run nix flake update nur
   run nix flake check --no-build
   run sudo nixos-rebuild switch --flake ".#$HOST"
   pause_step || exit 0
 
   echo
   echo "Batch C: non-flake repos"
-  run nix flake lock --update-input nix-doom-emacs-unstraightened
-  run nix flake lock --update-input doom-config
-  run nix flake lock --update-input neovim
-  run nix flake lock --update-input betterfox
-  run nix flake lock --update-input thunderbird-catppuccin
+  run nix flake update nix-doom-emacs-unstraightened
+  run nix flake update doom-config
+  run nix flake update neovim
+  run nix flake update betterfox
+  run nix flake update thunderbird-catppuccin
   run nix flake check --no-build
   run sudo nixos-rebuild switch --flake ".#$HOST"
 
