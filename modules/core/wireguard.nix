@@ -3,6 +3,7 @@ let
   vars = import ../../hosts/${host}/variables.nix;
   wgIf = "wg0";
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
+  wgKillSwitch = vars.wgKillSwitch or false;
   wgEndpointHost = lib.head (lib.splitString ":" vars.wgServerEndpoint);
   wgEndpointPort = lib.last (lib.splitString ":" vars.wgServerEndpoint);
 in
@@ -37,7 +38,7 @@ in
     firewall = {
       # Do not open inbound 51820 for ProtonVPN client mode.
       allowedUDPPorts = [ ];
-      extraCommands = lib.mkIf vars.wgEnable ''
+      extraCommands = lib.mkIf (vars.wgEnable && wgKillSwitch) ''
         # Kill switch: only allow local/tailscale/wg egress, plus Proton endpoint handshake.
         ${pkgs.iptables}/bin/iptables -I OUTPUT -d ${wgEndpointHost} -p udp --dport ${wgEndpointPort} -j ACCEPT
         ${pkgs.iptables}/bin/iptables -I OUTPUT ! -o ${wgIf} ! -o tailscale0 \
@@ -45,7 +46,7 @@ in
         ${pkgs.iptables}/bin/ip6tables -I OUTPUT ! -o ${wgIf} ! -o tailscale0 \
           -m addrtype ! --dst-type LOCAL -j REJECT
       '';
-      extraStopCommands = lib.mkIf vars.wgEnable ''
+      extraStopCommands = lib.mkIf (vars.wgEnable && wgKillSwitch) ''
         ${pkgs.iptables}/bin/iptables -D OUTPUT -d ${wgEndpointHost} -p udp --dport ${wgEndpointPort} -j ACCEPT || true
         ${pkgs.iptables}/bin/iptables -D OUTPUT ! -o ${wgIf} ! -o tailscale0 \
           -m addrtype ! --dst-type LOCAL -j REJECT || true
