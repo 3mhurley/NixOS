@@ -11,8 +11,6 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
-
   environment.systemPackages = with pkgs; [
     appimage-run # Needed For AppImage Support
     killall # For Killing All Instances Of Programs
