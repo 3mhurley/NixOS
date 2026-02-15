@@ -31,6 +31,7 @@ let
     (import ./underwatt.nix scriptArgs)
     (import ./update-all.nix scriptArgs)
     (import ./upgrade-staged.nix scriptArgs)
+    (import ./flake-update-input.nix scriptArgs)
     # Add new scripts here as you create them
   ];
 in
