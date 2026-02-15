@@ -20,10 +20,6 @@
     rclone # Cloning Utility
     jq # Json Formatting Utility
     bibata-cursors
-    sddm-astronaut # Sddm Theme (Overlayed)
-    kdePackages.qtsvg # Sddm Dependency
-    kdePackages.qtmultimedia # Sddm Dependency
-    kdePackages.qtvirtualkeyboard # Sddm Dependency
     fzf # Fuzzy Finder
     fd # Better Find
     android-tools # ADB and fastboot
