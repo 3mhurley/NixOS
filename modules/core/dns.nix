@@ -71,8 +71,8 @@
           address = "127.0.0.1:3005";
         };
         dns = {
-          bind_host = "127.0.0.1";
-          bind_port = 53;
+          bind_hosts = [ "127.0.0.1" ];
+          port = 53;
           upstream_dns = [ "127.0.0.1:5335" ];
           bootstrap_dns = [ "127.0.0.1:5335" ];
         };
