@@ -1,6 +1,11 @@
 { host, pkgs, ... }:
 let
-  inherit (import ../../hosts/${host}/variables.nix) hostname uploadSpeed downloadSpeed;
+  inherit (import ../../hosts/${host}/variables.nix)
+    hostname
+    uploadSpeed
+    downloadSpeed
+    wanInterface
+    ;
 in
 {
   networking = {
@@ -28,8 +33,14 @@ in
       # ];
     };
     localCommands = ''
-      # Detect the default route interface dynamically
-      WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '{print $5; exit}')
+      # Pin shaping to explicit WAN if configured; otherwise auto-detect a non-tunnel default route.
+      WANIF="${wanInterface}"
+      if [ -z "$WANIF" ]; then
+        WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '$5 != "wg0" && $5 != "tailscale0" {print $5; exit}')
+      fi
+      if [ -z "$WANIF" ]; then
+        WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '{print $5; exit}')
+      fi
 
       # Exit early if no default route interface was found
       [ -z "$WANIF" ] && exit 0
