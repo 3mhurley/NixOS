@@ -24,7 +24,6 @@ in
     wireguard.interfaces.${wgIf} = lib.mkIf vars.wgEnable {
       ips = [ vars.wgAddress ];
       privateKeyFile = wgKeyFile;
-      autostart = true;
       peers = [
         {
           publicKey = vars.wgServerPublicKey;
