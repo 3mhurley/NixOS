@@ -1,5 +1,6 @@
 { host, pkgs, ... }:
 pkgs.writeShellScriptBin "rebuild" ''
+  set -euo pipefail
   # Colors for output
   RED='\033[0;31m'
   GREEN='\033[0;32m'
@@ -20,15 +21,21 @@ pkgs.writeShellScriptBin "rebuild" ''
   fi
   echo -e "''${GREEN}Flake: $flake''${NC}"
   echo -e "''${GREEN}Host: ${host}''${NC}"
-  currentUser=$(logname)
+  currentUser="$(id -un)"
+
+  # Escape replacement string for sed (handles / and & safely)
+  escapedUser=$(printf '%s\n' "$currentUser" | sed 's/[\/&]/\\&/g')
 
   # replace username variable in variables.nix with $USER
-  sudo sed -i -e "s/username = \".*\"/username = \"$currentUser\"/" "$flake/hosts/${host}/variables.nix"
+  sudo sed -i -e "s|username = \".*\"|username = \"$escapedUser\"|" "$flake/hosts/${host}/variables.nix"
 
   if [ -f "/etc/nixos/hardware-configuration.nix" ]; then
     cat "/etc/nixos/hardware-configuration.nix" | sudo tee "$flake/hosts/${host}/hardware-configuration.nix" >/dev/null
   else
-    sudo nixos-generate-config --show-hardware-config >"$flake/hosts/${host}/hardware-configuration.nix"
+    sudo nixos-generate-config --show-hardware-config >"$flake/hosts/${host}/hardware-configuration.nix" || {
+      echo -e "''${RED}Failed to generate hardware config''${NC}"
+      exit 1
+    }
   fi
 
   sudo git -C "$flake" add hosts/${host}/hardware-configuration.nix
