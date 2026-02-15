@@ -25,4 +25,19 @@
       update.onActivation = false;
     };
   };
+
+  # Avoid startup races where Flatpak runs before DNS/network is available.
+  systemd.services.flatpak-managed-install = {
+    after = [
+      "network-online.target"
+      "nss-lookup.target"
+      "unbound.service"
+      "adguardhome.service"
+    ];
+    wants = [
+      "network-online.target"
+      "unbound.service"
+      "adguardhome.service"
+    ];
+  };
 }
