@@ -28,6 +28,7 @@
 
   # WireGuard / ProtonVPN
   wgEnable = false; # Set true after filling values below and creating key file in /etc/wireguard
+  wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
   wgAddress = "REDACTED_ADDR"; # [Interface] Address from ProtonVPN WireGuard config, e.g. "REDACTED_ADDR"
   wgServerPublicKey = "REDACTED_PUBKEY"; # [Peer] PublicKey from ProtonVPN WireGuard config
   wgServerEndpoint = "REDACTED_ENDPOINT:51820"; # [Peer] Endpoint from ProtonVPN WireGuard config, e.g. "1.2.3.4:51820"
