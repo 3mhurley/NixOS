@@ -10,7 +10,10 @@
       programs.firefox = {
         enable = true;
         # Prefer prebuilt Mozilla binaries to avoid long local source builds.
-        package = if pkgs ? firefox-bin then pkgs.firefox-bin else pkgs.firefox;
+        package = lib.warnIf (!(pkgs ? firefox-bin)) ''
+          firefox-bin is unavailable in this nixpkgs set; falling back to pkgs.firefox.
+          This fallback may trigger a long local Firefox source build.
+        '' (if pkgs ? firefox-bin then pkgs.firefox-bin else pkgs.firefox);
         policies = import ./policies.nix { inherit lib; };
         languagePacks = [
           "en-GB"
