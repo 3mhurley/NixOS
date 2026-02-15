@@ -8,7 +8,7 @@
       "uid=1000"
       "gid=100"
       "noatime"
-      "umask=000"
+      "umask=022"
       "nofail"
       "x-gvfs-show"
       "x-systemd.mount-timeout=5"
