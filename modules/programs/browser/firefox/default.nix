@@ -9,6 +9,8 @@
     (_: {
       programs.firefox = {
         enable = true;
+        # Prefer prebuilt Mozilla binaries to avoid long local source builds.
+        package = if pkgs ? firefox-bin then pkgs.firefox-bin else pkgs.firefox;
         policies = import ./policies.nix { inherit lib; };
         languagePacks = [
           "en-GB"

@@ -31,7 +31,6 @@ in
     ./hardware/video/${vars.videoDriver}.nix # Enable gpu drivers defined in variables.nix
     ./desktop/${vars.desktop} # Set window manager defined in variables.nix
     ./programs/browser/${vars.browser} # Set browser defined in variables.nix
-    ./programs/browser/firefox
     ./programs/terminal/${vars.terminal} # Set terminal defined in variables.nix
     ./programs/editor/${vars.editor} # Set editor defined in variables.nix
     ./programs/editor/vscode
