@@ -24,6 +24,13 @@
   # Network QoS
   uploadSpeed = "285Mbit"; # 95% of actual upload
   downloadSpeed = "2000Mbit"; # 95% of actual download
+  wanInterface = ""; # Optional: set e.g. "enp6s0" to pin CAKE shaping to physical WAN
+
+  # WireGuard / ProtonVPN
+  wgEnable = false; # Set true after filling values below and creating key file in /etc/wireguard
+  wgAddress = ""; # [Interface] Address from ProtonVPN WireGuard config, e.g. "10.2.0.2/32"
+  wgServerPublicKey = ""; # [Peer] PublicKey from ProtonVPN WireGuard config
+  wgServerEndpoint = ""; # [Peer] Endpoint from ProtonVPN WireGuard config, e.g. "1.2.3.4:51820"
 
   # Audio
   alsaDevice = "alsa_input.pci-0000_00_1f.3.analog-stereo";
