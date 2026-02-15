@@ -21,8 +21,8 @@
         # Add other Flatpak IDs here, e.g., "org.mozilla.firefox"
       ];
 
-      # Optional: Automatically update Flatpaks when you run nixos-rebuild swit ch
-      update.onActivation = true;
+      # Keep rebuilds reliable: avoid failing switch due to transient Flatpak/network issues.
+      update.onActivation = false;
     };
   };
 }
