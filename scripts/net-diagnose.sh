@@ -112,7 +112,15 @@ analyze() {
   if grep -A2 -F "===== systemd unbound =====" "${LOG_FILE}" | grep -q '^active$'; then unbound_state="active"; else unbound_state="inactive"; fi
   if grep -A2 -F "===== systemd wireguard-wg0 =====" "${LOG_FILE}" | grep -q '^active$'; then wg_unit_state="active"; else wg_unit_state="inactive"; fi
 
-  wg_nm_profiles=$(grep -E '^.+:wireguard:' "${LOG_FILE}" | wc -l | tr -d ' ')
+  # Count only WireGuard profiles listed under "NM connections", not device state lines.
+  wg_nm_profiles=$(
+    awk '
+      /^===== NM connections =====$/ { in_nm_conn=1; next }
+      /^===== NM active =====$/ { in_nm_conn=0 }
+      in_nm_conn && $0 !~ /^(\+|=====|$)/ && $0 ~ /:wireguard:/ { c++ }
+      END { print c+0 }
+    ' "${LOG_FILE}"
+  )
 
   if grep -q 'org\.freedesktop\.resolve1' "${LOG_FILE}"; then
     nm_resolve1_error=1

@@ -59,4 +59,8 @@ in
     ../../modules/programs/misc/lact # GPU fan, clock and power configuration
   ]
   ++ lib.optional (vars.games == true) ../../modules/core/games.nix;
+
+  security.pki.certificateFiles = [
+    ./certs/sslcom-transit-ecc-ca-r2.pem
+  ];
 }
