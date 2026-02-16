@@ -122,6 +122,27 @@ EOF
     fi
   '';
 
+  # Ensure WireGuard sessions do not persist across boot/switch when autostart is disabled.
+  # This runs after target activation and force-stops wg0 if it is up.
+  systemd.services."wireguard-${wgIf}-nonpersistent" = lib.mkIf (vars.wgEnable && !wgAutostart) {
+    description = "Force stop WireGuard when wgAutostart is disabled";
+    wantedBy = [
+      "multi-user.target"
+      "sysinit-reactivation.target"
+    ];
+    after = [
+      "network.target"
+      "wireguard-${wgIf}.service"
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = false;
+    };
+    script = ''
+      ${pkgs.systemd}/bin/systemctl stop wireguard-${wgIf}.service 2>/dev/null || true
+    '';
+  };
+
   environment.systemPackages = with pkgs; [ wireguard-tools ];
 
   warnings = lib.optional (!vars.wgEnable) ''
