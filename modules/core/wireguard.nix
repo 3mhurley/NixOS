@@ -5,6 +5,7 @@ let
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
   wgAutostart = vars.wgAutostart or false;
   wgKillSwitch = vars.wgKillSwitch or false;
+  wgBypassDomains = vars.wgBypassDomains or [ ];
   wgPresharedKeyFile = vars.wgPresharedKeyFile or "";
   wgEndpointHost = lib.head (lib.splitString ":" vars.wgServerEndpoint);
   wgEndpointPort = lib.last (lib.splitString ":" vars.wgServerEndpoint);
@@ -33,10 +34,21 @@ in
         WAN_IF=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '$5 != "${wgIf}" {print $5; exit}')
         if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ]; then
           ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
+          # Optional split-tunnel bypasses for domains that break behind VPN exits.
+          for domain in ${lib.escapeShellArgs wgBypassDomains}; do
+            for ip in $(getent ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
+              ${pkgs.iproute2}/bin/ip -4 route replace "$ip/32" via "$WAN_GW" dev "$WAN_IF"
+            done
+          done
         fi
       '';
       postShutdown = ''
         ${pkgs.iproute2}/bin/ip -4 route del ${wgEndpointHost}/32 2>/dev/null || true
+        for domain in ${lib.escapeShellArgs wgBypassDomains}; do
+          for ip in $(getent ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
+            ${pkgs.iproute2}/bin/ip -4 route del "$ip/32" 2>/dev/null || true
+          done
+        done
       '';
       peers = [
         (
