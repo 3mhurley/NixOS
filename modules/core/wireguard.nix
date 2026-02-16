@@ -3,6 +3,7 @@ let
   vars = import ../../hosts/${host}/variables.nix;
   wgIf = "wg0";
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
+  getentBin = "${pkgs.glibc.bin}/bin/getent";
   wgAutostart = vars.wgAutostart or false;
   wgKillSwitch = vars.wgKillSwitch or false;
   wgBypassDomains = vars.wgBypassDomains or [ ];
@@ -36,7 +37,7 @@ in
           ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
           # Optional split-tunnel bypasses for domains that break behind VPN exits.
           for domain in ${lib.escapeShellArgs wgBypassDomains}; do
-            for ip in $(getent ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
+            for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
               ${pkgs.iproute2}/bin/ip -4 route replace "$ip/32" via "$WAN_GW" dev "$WAN_IF"
             done
           done
@@ -45,7 +46,7 @@ in
       postShutdown = ''
         ${pkgs.iproute2}/bin/ip -4 route del ${wgEndpointHost}/32 2>/dev/null || true
         for domain in ${lib.escapeShellArgs wgBypassDomains}; do
-          for ip in $(getent ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
+          for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
             ${pkgs.iproute2}/bin/ip -4 route del "$ip/32" 2>/dev/null || true
           done
         done

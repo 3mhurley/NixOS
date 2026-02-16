@@ -105,10 +105,12 @@ in
         $nmcli_cmd connection up "$first_eth_profile" || true
       fi
 
-      # Keep WireGuard manual-only; wg-toggle controls this profile.
-      if $nmcli_cmd -t -f NAME,TYPE connection show | $awk_cmd -F: '$1=="wg0" && $2=="wireguard"{found=1} END{exit !found}'; then
-        $nmcli_cmd connection modify "wg0" connection.autoconnect no || true
-      fi
+      # Enforce a single WireGuard control plane (systemd wireguard-wg0 + wg-toggle).
+      # Remove NM WireGuard profiles so they cannot auto-activate and steal default routes.
+      while IFS= read -r wg_profile; do
+        [ -n "$wg_profile" ] || continue
+        $nmcli_cmd connection delete "$wg_profile" || true
+      done < <($nmcli_cmd -t -f NAME,TYPE connection show | $awk_cmd -F: '$2=="wireguard"{print $1}')
     '';
   };
 }
