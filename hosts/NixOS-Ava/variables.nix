@@ -27,7 +27,7 @@
   wanInterface = ""; # Optional: set e.g. "enp6s0" to pin CAKE shaping to physical WAN
 
   # WireGuard / ProtonVPN
-  wgEnable = false; # Set true after filling values below and creating key file in /etc/wireguard
+  wgEnable = true; # Set true after filling values below and creating key file in /etc/wireguard
   wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
   wgPresharedKeyFile = ""; # Optional/Proton: file containing [Peer] PresharedKey
   wgAddress = "REDACTED_ADDR"; # [Interface] Address from ProtonVPN WireGuard config, e.g. "REDACTED_ADDR"
