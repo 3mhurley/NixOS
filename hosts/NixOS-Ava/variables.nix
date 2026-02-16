@@ -27,7 +27,7 @@
   wanInterface = ""; # Optional: set e.g. "enp6s0" to pin CAKE shaping to physical WAN
 
   # WireGuard / ProtonVPN
-  wgEnable = true; # Set true after filling values below and creating key file in /etc/wireguard
+  wgEnable = false; # Temporary hard-disable to keep networking stable during rebuilds; re-enable when WG flow is fixed
   wgAutostart = false; # Keep false to avoid boot-time lockouts; start WireGuard manually when needed
   wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
   wgBypassDomains = [
