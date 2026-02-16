@@ -80,4 +80,35 @@ in
     networkmanagerapplet
     iproute2
   ];
+
+  # Normalize NM profile behavior at boot so WAN comes up without manual menu selection.
+  systemd.services.networkmanager-connection-bootstrap = {
+    description = "Normalize NetworkManager autoconnect priorities";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "NetworkManager.service" ];
+    wants = [ "NetworkManager.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+    };
+    script = ''
+      set -euo pipefail
+
+      nmcli_cmd='${pkgs.networkmanager}/bin/nmcli'
+      awk_cmd='${pkgs.gawk}/bin/awk'
+
+      # Prefer ethernet profiles for primary uplink.
+      first_eth_profile="$($nmcli_cmd -t -f NAME,TYPE connection show \
+        | $awk_cmd -F: '$2=="802-3-ethernet"{print $1; exit}')"
+      if [ -n "$first_eth_profile" ]; then
+        $nmcli_cmd connection modify "$first_eth_profile" connection.autoconnect yes || true
+        $nmcli_cmd connection modify "$first_eth_profile" connection.autoconnect-priority 100 || true
+        $nmcli_cmd connection up "$first_eth_profile" || true
+      fi
+
+      # Keep WireGuard manual-only; wg-toggle controls this profile.
+      if $nmcli_cmd -t -f NAME,TYPE connection show | $awk_cmd -F: '$1=="wg0" && $2=="wireguard"{found=1} END{exit !found}'; then
+        $nmcli_cmd connection modify "wg0" connection.autoconnect no || true
+      fi
+    '';
+  };
 }
