@@ -15,11 +15,16 @@
   };
   systemd.services = {
     unbound.stopIfChanged = false;
+    unbound = {
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+    };
     adguardhome.serviceConfig = {
       After = [
-        "network.target"
+        "network-online.target"
         "unbound.service"
       ];
+      Wants = [ "network-online.target" ];
       Requires = [ "unbound.service" ];
     };
   };
@@ -73,8 +78,8 @@
         dns = {
           bind_hosts = [ "127.0.0.1" ];
           port = 53;
-          upstream_dns = [ "127.0.0.1:5335" ];
-          bootstrap_dns = [ "127.0.0.1:5335" ];
+          upstream_dns = [ "tcp://127.0.0.1:5335" ];
+          bootstrap_dns = [ "tcp://127.0.0.1:5335" ];
         };
         filtering = {
           protection_enabled = true;

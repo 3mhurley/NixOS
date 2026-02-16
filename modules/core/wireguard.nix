@@ -3,7 +3,7 @@ let
   vars = import ../../hosts/${host}/variables.nix;
   wgIf = "wg0";
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
-  getentBin = "${pkgs.glibc.bin}/bin/getent";
+  getentBin = "${pkgs.getent}/bin/getent";
   wgAutostart = vars.wgAutostart or false;
   wgKillSwitch = vars.wgKillSwitch or false;
   wgBypassDomains = vars.wgBypassDomains or [ ];
