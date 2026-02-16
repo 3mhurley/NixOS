@@ -4,6 +4,10 @@
 Get deterministic data after boot so we can fix root cause instead of repeatedly toggling `Wired Connection 1` and `wg_toggle`.
 
 ## What this captures
+- Config identity:
+  - Git commit/repo dirty state for `/home/onee/NixOS`
+  - `/run/current-system` store path
+  - `nixos-version`
 - NetworkManager connection/device/autoconnect state
 - WireGuard + DNS service health (`wireguard-wg0`, `adguardhome`, `unbound`)
 - IPv4 routes and default route ownership
@@ -33,6 +37,18 @@ Key files:
 - `summary.txt`: high-level findings + likely fixes
 - `commands.log`: command output and errors
 - `journal-network.txt`: filtered boot logs
+
+## Revision tracking
+- Every `summary.txt` now includes:
+  - `Config git revision: <short-sha> (clean|dirty)`
+  - `Running system: /nix/store/...-nixos-system-...`
+  - `NixOS version: ...`
+- `commands.log` also captures full `git rev-parse HEAD` + `git status --short`.
+- If you need to cite a specific generation manually, run:
+
+```bash
+readlink -f /run/current-system
+```
 
 ## How to interpret common findings
 - `No default IPv4 route`: uplink profile is not up or route is stolen/removed.

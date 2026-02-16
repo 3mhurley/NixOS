@@ -41,15 +41,36 @@ append_summary() {
 }
 
 append_header() {
+  local git_rev
+  local git_dirty
+  local system_store
+  local nixos_ver
+
+  git_rev="$(git -C "$(pwd)" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
+  if git -C "$(pwd)" diff --quiet --ignore-submodules HEAD >/dev/null 2>&1; then
+    git_dirty="clean"
+  else
+    git_dirty="dirty"
+  fi
+  system_store="$(readlink -f /run/current-system 2>/dev/null || echo "unknown")"
+  nixos_ver="$(nixos-version 2>/dev/null || echo "unknown")"
+
   {
     echo "Network Diagnose Summary"
     echo "Generated: $(date -Is)"
     echo "Output dir: ${OUT_DIR}"
+    echo "Config git revision: ${git_rev} (${git_dirty})"
+    echo "Running system: ${system_store}"
+    echo "NixOS version: ${nixos_ver}"
     echo
   } >"${SUMMARY_FILE}"
 }
 
 collect() {
+  run_sh "Config revision" "git -C \"$(pwd)\" rev-parse HEAD && git -C \"$(pwd)\" status --short"
+  run "Current system store path" readlink -f /run/current-system
+  run "nixos-version" nixos-version
+
   run "System" uname -a
   run "Hostname" hostnamectl
 
