@@ -4,6 +4,7 @@ let
   wgIf = "wg0";
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
   wgKillSwitch = vars.wgKillSwitch or false;
+  wgPresharedKeyFile = vars.wgPresharedKeyFile or "";
   wgEndpointHost = lib.head (lib.splitString ":" vars.wgServerEndpoint);
   wgEndpointPort = lib.last (lib.splitString ":" vars.wgServerEndpoint);
 in
@@ -25,13 +26,29 @@ in
     wireguard.interfaces.${wgIf} = lib.mkIf vars.wgEnable {
       ips = [ vars.wgAddress ];
       privateKeyFile = wgKeyFile;
+      # Keep endpoint reachability outside the tunnel to avoid recursive routing failures.
+      postSetup = ''
+        WAN_GW=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '$5 != "${wgIf}" && $3 != "" {print $3; exit}')
+        WAN_IF=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '$5 != "${wgIf}" {print $5; exit}')
+        if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ]; then
+          ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
+        fi
+      '';
+      postShutdown = ''
+        ${pkgs.iproute2}/bin/ip -4 route del ${wgEndpointHost}/32 2>/dev/null || true
+      '';
       peers = [
-        {
-          publicKey = vars.wgServerPublicKey;
-          endpoint = vars.wgServerEndpoint;
-          allowedIPs = [ "0.0.0.0/0" ];
-          persistentKeepalive = 25;
-        }
+        (
+          {
+            publicKey = vars.wgServerPublicKey;
+            endpoint = vars.wgServerEndpoint;
+            allowedIPs = [ "0.0.0.0/0" ];
+            persistentKeepalive = 25;
+          }
+          // lib.optionalAttrs (wgPresharedKeyFile != "") {
+            presharedKeyFile = wgPresharedKeyFile;
+          }
+        )
       ];
     };
 
