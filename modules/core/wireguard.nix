@@ -114,14 +114,6 @@ EOF
     stopIfChanged = true;
   };
 
-  # Extra guardrail: ensure rebuilds never leave wg0 active when autostart is disabled.
-  system.activationScripts.wireguardAutostartGuard = lib.mkIf (vars.wgEnable && !wgAutostart) ''
-    if ${pkgs.systemd}/bin/systemctl is-active --quiet wireguard-${wgIf}.service; then
-      echo "Stopping wireguard-${wgIf}.service (wgAutostart=false)"
-      ${pkgs.systemd}/bin/systemctl stop wireguard-${wgIf}.service || true
-    fi
-  '';
-
   # Ensure WireGuard sessions do not persist across boot/switch when autostart is disabled.
   # This runs after target activation and force-stops wg0 if it is up.
   systemd.services."wireguard-${wgIf}-nonpersistent" = lib.mkIf (vars.wgEnable && !wgAutostart) {
@@ -139,7 +131,14 @@ EOF
       RemainAfterExit = false;
     };
     script = ''
+      # Stop peer units first to avoid stop-order races being reported as failed units.
+      for unit in $(${pkgs.systemd}/bin/systemctl list-units --all --full --plain 'wireguard-${wgIf}-peer-*.service' --no-legend 2>/dev/null | ${pkgs.gawk}/bin/awk '{print $1}'); do
+        ${pkgs.systemd}/bin/systemctl stop "$unit" 2>/dev/null || true
+        ${pkgs.systemd}/bin/systemctl reset-failed "$unit" 2>/dev/null || true
+      done
+
       ${pkgs.systemd}/bin/systemctl stop wireguard-${wgIf}.service 2>/dev/null || true
+      ${pkgs.systemd}/bin/systemctl reset-failed wireguard-${wgIf}.service 2>/dev/null || true
     '';
   };
 
