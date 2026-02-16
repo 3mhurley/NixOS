@@ -36,10 +36,26 @@ in
       # Pin shaping to explicit WAN if configured; otherwise auto-detect a non-tunnel default route.
       WANIF="${wanInterface}"
       if [ -z "$WANIF" ]; then
-        WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '$5 != "wg0" && $5 != "tailscale0" {print $5; exit}')
+        WANIF=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
+          $1 == "default" {
+            dev = "";
+            for (i = 1; i <= NF; i++) if ($i == "dev") dev = $(i + 1);
+            if (dev != "" && dev != "wg0" && dev != "tailscale0") {
+              print dev;
+              exit;
+            }
+          }
+        ')
       fi
       if [ -z "$WANIF" ]; then
-        WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '{print $5; exit}')
+        WANIF=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
+          $1 == "default" {
+            for (i = 1; i <= NF; i++) if ($i == "dev") {
+              print $(i + 1);
+              exit;
+            }
+          }
+        ')
       fi
 
       # Exit early if no default route interface was found

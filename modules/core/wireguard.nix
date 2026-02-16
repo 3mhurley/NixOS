@@ -33,8 +33,21 @@ in
       privateKeyFile = wgKeyFile;
       # Keep endpoint reachability outside the tunnel to avoid recursive routing failures.
       postSetup = ''
-        WAN_GW=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '$5 != "${wgIf}" && $3 != "" {print $3; exit}')
-        WAN_IF=$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '$5 != "${wgIf}" {print $5; exit}')
+        read -r WAN_GW WAN_IF <<EOF
+$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
+  $1 == "default" {
+    via = ""; dev = "";
+    for (i = 1; i <= NF; i++) {
+      if ($i == "via") via = $(i + 1);
+      if ($i == "dev") dev = $(i + 1);
+    }
+    if (via != "" && dev != "" && dev != "${wgIf}" && dev != "tailscale0") {
+      print via, dev;
+      exit;
+    }
+  }
+')
+EOF
         if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ]; then
           ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
           # Optional split-tunnel bypasses for domains that break behind VPN exits.
@@ -103,9 +116,9 @@ in
 
   # Extra guardrail: ensure rebuilds never leave wg0 active when autostart is disabled.
   system.activationScripts.wireguardAutostartGuard = lib.mkIf (vars.wgEnable && !wgAutostart) ''
-    if systemctl is-active --quiet wireguard-${wgIf}.service; then
+    if ${pkgs.systemd}/bin/systemctl is-active --quiet wireguard-${wgIf}.service; then
       echo "Stopping wireguard-${wgIf}.service (wgAutostart=false)"
-      systemctl stop wireguard-${wgIf}.service || true
+      ${pkgs.systemd}/bin/systemctl stop wireguard-${wgIf}.service || true
     fi
   '';
 
