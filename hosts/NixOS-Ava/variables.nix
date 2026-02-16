@@ -28,6 +28,7 @@
 
   # WireGuard / ProtonVPN
   wgEnable = true; # Set true after filling values below and creating key file in /etc/wireguard
+  wgAutostart = false; # Keep false to avoid boot-time lockouts; start WireGuard manually when needed
   wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
   wgPresharedKeyFile = ""; # Optional/Proton: file containing [Peer] PresharedKey
   wgAddress = "REDACTED_ADDR"; # [Interface] Address from ProtonVPN WireGuard config, e.g. "REDACTED_ADDR"

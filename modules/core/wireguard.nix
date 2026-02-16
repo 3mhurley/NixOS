@@ -3,6 +3,7 @@ let
   vars = import ../../hosts/${host}/variables.nix;
   wgIf = "wg0";
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
+  wgAutostart = vars.wgAutostart or false;
   wgKillSwitch = vars.wgKillSwitch or false;
   wgPresharedKeyFile = vars.wgPresharedKeyFile or "";
   wgEndpointHost = lib.head (lib.splitString ":" vars.wgServerEndpoint);
@@ -75,6 +76,12 @@ in
 
   # Coexist with strict global rp_filter from security.nix.
   boot.kernel.sysctl."net.ipv4.conf.${wgIf}.rp_filter" = lib.mkIf vars.wgEnable 2;
+
+  # `networking.wireguard.interfaces` does not expose an autostart toggle on this channel.
+  # Control boot behavior by adjusting the generated systemd unit links.
+  systemd.services."wireguard-${wgIf}" = lib.mkIf (vars.wgEnable && !wgAutostart) {
+    wantedBy = lib.mkForce [ ];
+  };
 
   environment.systemPackages = with pkgs; [ wireguard-tools ];
 
