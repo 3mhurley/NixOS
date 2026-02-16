@@ -21,8 +21,23 @@
         # Add other Flatpak IDs here, e.g., "org.mozilla.firefox"
       ];
 
-      # Optional: Automatically update Flatpaks when you run nixos-rebuild swit ch
-      update.onActivation = true;
+      # Keep rebuilds reliable: avoid failing switch due to transient Flatpak/network issues.
+      update.onActivation = false;
     };
+  };
+
+  # Avoid startup races where Flatpak runs before DNS/network is available.
+  systemd.services.flatpak-managed-install = {
+    after = [
+      "network-online.target"
+      "nss-lookup.target"
+      "unbound.service"
+      "adguardhome.service"
+    ];
+    wants = [
+      "network-online.target"
+      "unbound.service"
+      "adguardhome.service"
+    ];
   };
 }

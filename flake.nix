@@ -76,8 +76,6 @@
       mkHost =
         host:
         nixpkgs.lib.nixosSystem {
-          # inherit system;
-          system = forAllSystems (system: system);
           modules = [
             ./hosts/${host}/configuration.nix
           ];

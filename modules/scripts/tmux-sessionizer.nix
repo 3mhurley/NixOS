@@ -4,6 +4,7 @@
   ...
 }:
 pkgs.writeShellScriptBin "tmux-sessionizer" ''
+  set -euo pipefail
   tmux="${pkgs.tmux}/bin/tmux"
   fzf="${pkgs.fzf}/bin/fzf"
 

@@ -1,15 +1,5 @@
 { ... }:
 {
-  networking.firewall = {
-    allowedTCPPorts = [
-      53
-      5335
-    ];
-    allowedUDPPorts = [
-      53
-      5335
-    ];
-  };
   # Disable systemd dns resolver
   services.resolved = {
     enable = false;
@@ -45,7 +35,6 @@
           port = 5335;
           access-control = [
             "127.0.0.1 allow"
-            "192.168.1.0/24 allow"
           ];
           # Based on recommended settings in https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound
           harden-glue = true;
@@ -73,17 +62,17 @@
     };
     adguardhome = {
       enable = true;
-      host = "0.0.0.0";
+      host = "127.0.0.1";
       port = 3005;
-      mutableSettings = true;
-      openFirewall = true;
+      mutableSettings = false;
+      openFirewall = false;
       settings = {
         http = {
           address = "127.0.0.1:3005";
         };
         dns = {
-          bind_host = "0.0.0.0";
-          bind_port = 53;
+          bind_hosts = [ "127.0.0.1" ];
+          port = 53;
           upstream_dns = [ "127.0.0.1:5335" ];
           bootstrap_dns = [ "127.0.0.1:5335" ];
         };
@@ -106,7 +95,8 @@
               "https://easylist.to/easylist/easylist.txt" # Base filter
               "https://easylist.to/easylist/easyprivacy.txt" # Privacy protection
               "https://osint.digitalside.it/Threat-Intel/lists/latestdomains.txt" # Malware domains
-              "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt" # Scam protection                                                                                      "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt"  # Cryptominers
+              "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt" # Scam protection
+              "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt" # Cryptominers
 
               # My Lists
               # "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt" # Large

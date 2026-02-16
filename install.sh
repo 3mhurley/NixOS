@@ -87,11 +87,11 @@ create_new_host() {
   }
 
   # Remove old hardware config
-  rm -f "./hosts/$selected_host/hardware-configuration.nix"
+  rm -f "./hosts/$new_name/hardware-configuration.nix"
 
   # Update hostname in the new host's variables.nix if it exists
   if [ -f "./hosts/$new_name/variables.nix" ]; then
-    sed -i -e "s/hostname = \".*\"/hostname = \"$new_name\"/" "./hosts/$new_name/variables.nix"
+    sed -i -e "s|hostname = \".*\"|hostname = \"$new_name\"|" "./hosts/$new_name/variables.nix"
   fi
 
   echo "Host '$new_name' created successfully."
@@ -211,7 +211,7 @@ done
 info "Using host: $selected_host"
 
 # replace username variable in variables.nix with $USER
-sudo sed -i -e "s/username = \".*\"/username = \"$currentUser\"/" "./hosts/$selected_host/variables.nix"
+sudo sed -i -e "s|username = \".*\"|username = \"$currentUser\"|" "./hosts/$selected_host/variables.nix"
 
 # Generate Hardware Configuration
 info "Generating hardware configuration..."

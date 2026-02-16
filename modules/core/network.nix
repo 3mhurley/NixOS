@@ -1,6 +1,11 @@
 { host, pkgs, ... }:
 let
-  inherit (import ../../hosts/${host}/variables.nix) hostname;
+  inherit (import ../../hosts/${host}/variables.nix)
+    hostname
+    uploadSpeed
+    downloadSpeed
+    wanInterface
+    ;
 in
 {
   networking = {
@@ -14,22 +19,28 @@ in
 
     firewall = {
       enable = true;
-        # allowedTCPPorts = [
-        # 22 # SSH (Secure Shell) - remote access
-        # 80 # HTTP - web traffic
-        # 443 # HTTPS - encrypted web traffic
-        # 59010 # Custom application port
-        # 59011 # Custom application port
-        # 8080 # Alternative HTTP/web server port
+      # allowedTCPPorts = [
+      # 22 # SSH (Secure Shell) - remote access
+      # 80 # HTTP - web traffic
+      # 443 # HTTPS - encrypted web traffic
+      # 59010 # Custom application port
+      # 59011 # Custom application port
+      # 8080 # Alternative HTTP/web server port
       # ];
       # allowedUDPPorts = [
-        # 59010 # Custom application port
-        # 59011 # Custom application port
+      # 59010 # Custom application port
+      # 59011 # Custom application port
       # ];
     };
     localCommands = ''
-      # Detect the default route interface dynamically
-      WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '{print $5; exit}')
+      # Pin shaping to explicit WAN if configured; otherwise auto-detect a non-tunnel default route.
+      WANIF="${wanInterface}"
+      if [ -z "$WANIF" ]; then
+        WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '$5 != "wg0" && $5 != "tailscale0" {print $5; exit}')
+      fi
+      if [ -z "$WANIF" ]; then
+        WANIF=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/awk '{print $5; exit}')
+      fi
 
       # Exit early if no default route interface was found
       [ -z "$WANIF" ] && exit 0
@@ -50,7 +61,7 @@ in
       # - ack-filter: filter TCP ACK packets to reduce unnecessary traffic
       # - overhead: account for protocol overhead in shaping calculations
       ${pkgs.iproute2}/bin/tc qdisc replace dev "$WANIF" root cake \
-        bandwidth 285Mbit diffserv4 triple-isolate nat wash ack-filter overhead 50
+        bandwidth ${uploadSpeed} diffserv4 triple-isolate nat wash ack-filter overhead 50
 
       # Add ingress qdisc on WAN interface to redirect ingress traffic to ifb0
       ${pkgs.iproute2}/bin/tc qdisc replace dev "$WANIF" handle ffff: ingress
@@ -61,7 +72,7 @@ in
 
       # Apply Cake queuing discipline on ifb0 interface for download shaping (95% of 2100Mbps)
       ${pkgs.iproute2}/bin/tc qdisc replace dev ifb0 root cake \
-        bandwidth 2000Mbit diffserv4 triple-isolate nat wash overhead 50
+        bandwidth ${downloadSpeed} diffserv4 triple-isolate nat wash overhead 50
     '';
   };
 

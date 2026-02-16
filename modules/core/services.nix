@@ -1,4 +1,7 @@
-{ ... }:
+{ host, ... }:
+let
+  inherit (import ../../hosts/${host}/variables.nix) username alsaDevice;
+in
 {
   # Services to start
   services = {
@@ -21,7 +24,7 @@
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = true;
-        AllowUsers = ["Onee"]; # Allows all users by default. Can be [ "user1" "user2" ]
+        AllowUsers = [ username ]; # Allows all users by default. Can be [ "user1" "user2" ]
         UseDns = true;
         X11Forwarding = false;
         PermitRootLogin = "prohibit-password"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
@@ -61,14 +64,20 @@
             args = {
               "capture.props" = {
                 "node.name" = "linein-capture";
-                "audio.position" = [ "FL" "FR" ];
-                "node.target" = "alsa_input.pci-0000_00_1f.3.analog-stereo";
+                "audio.position" = [
+                  "FL"
+                  "FR"
+                ];
+                "node.target" = alsaDevice;
               };
               "playback.props" = {
                 "node.name" = "linein-playback";
                 "node.description" = "Line In Loopback";
                 "media.class" = "Stream/Output/Audio";
-                "audio.position" = [ "FL" "FR" ];
+                "audio.position" = [
+                  "FL"
+                  "FR"
+                ];
               };
             };
           }

@@ -1,5 +1,6 @@
 { pkgs, ... }:
 pkgs.writeShellScriptBin "underwatt" ''
+  set -euo pipefail
   # WARNING This script is setup for my gtx 1080 do not attempt to use this unless you know what settings your gpu can handle
 
   # sudo nvidia-smi -i 0 -pm 1 # Set persistance mode

@@ -19,7 +19,23 @@
   games = true; # Enable/Disable gaming module
 
   # Hardware
-  hostname = "NixOS-Ava";
+  hostname = "NixOS-Default";
+
+  # Network QoS
+  uploadSpeed = "285Mbit"; # 95% of actual upload
+  downloadSpeed = "2000Mbit"; # 95% of actual download
+  wanInterface = ""; # Optional: set e.g. "enp6s0" to pin CAKE shaping to physical WAN
+
+  # WireGuard / ProtonVPN
+  wgEnable = false; # Set true after filling values below and creating key file in /etc/wireguard
+  wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
+  wgPresharedKeyFile = ""; # Optional/Proton: file containing [Peer] PresharedKey
+  wgAddress = ""; # [Interface] Address from ProtonVPN WireGuard config, e.g. "REDACTED_ADDR"
+  wgServerPublicKey = ""; # [Peer] PublicKey from ProtonVPN WireGuard config
+  wgServerEndpoint = ""; # [Peer] Endpoint from ProtonVPN WireGuard config, e.g. "1.2.3.4:51820"
+
+  # Audio
+  alsaDevice = "alsa_input.pci-0000_00_1f.3.analog-stereo";
   videoDriver = "nvidia"; # nvidia, amdgpu, intel
 
   # Localization
