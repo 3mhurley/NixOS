@@ -8,7 +8,10 @@
         enable = true;
         doomDir = inputs.doom-config;
       };
-      home.packages = with pkgs; [nil nixfmt]; # Nix Stuff
+      home.packages = with pkgs; [
+        nil
+        nixfmt
+      ]; # Nix Stuff
     })
   ];
 }

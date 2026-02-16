@@ -27,11 +27,11 @@ let
         { };
   };
   sddmDependencies = [
-        sddm-astronaut
-        pkgs.kdePackages.qtsvg # Sddm Dependency
-        pkgs.kdePackages.qtmultimedia # Sddm Dependency
-        pkgs.kdePackages.qtvirtualkeyboard # Sddm Dependency
-      ];
+    sddm-astronaut
+    pkgs.kdePackages.qtsvg # Sddm Dependency
+    pkgs.kdePackages.qtmultimedia # Sddm Dependency
+    pkgs.kdePackages.qtvirtualkeyboard # Sddm Dependency
+  ];
 in
 {
   services.displayManager = {

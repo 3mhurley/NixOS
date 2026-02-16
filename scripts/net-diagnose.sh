@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -u
 
+NIXOS_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 TS="$(date +%Y%m%d-%H%M%S)"
 OUT_DIR="/tmp/net-diagnose-${TS}"
 LOG_FILE="${OUT_DIR}/commands.log"
@@ -46,8 +48,8 @@ append_header() {
   local system_store
   local nixos_ver
 
-  git_rev="$(git -C "$(pwd)" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
-  if git -C "$(pwd)" diff --quiet --ignore-submodules HEAD >/dev/null 2>&1; then
+  git_rev="$(git -C "$NIXOS_REPO" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
+  if git -C "$NIXOS_REPO" diff --quiet --ignore-submodules HEAD >/dev/null 2>&1; then
     git_dirty="clean"
   else
     git_dirty="dirty"
@@ -67,7 +69,7 @@ append_header() {
 }
 
 collect() {
-  run_sh "Config revision" "git -C \"$(pwd)\" rev-parse HEAD && git -C \"$(pwd)\" status --short"
+  run_sh "Config revision" "git -C \"$NIXOS_REPO\" rev-parse HEAD && git -C \"$NIXOS_REPO\" status --short"
   run "Current system store path" readlink -f /run/current-system
   run "nixos-version" nixos-version
 

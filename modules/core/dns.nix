@@ -1,5 +1,11 @@
 { ... }:
 {
+  # Pin DNS to local AdGuard -> Unbound chain; prevent NM from managing resolv.conf.
+  networking = {
+    nameservers = [ "127.0.0.1" ];
+    networkmanager.dns = "none";
+  };
+
   # Disable systemd dns resolver
   services.resolved = {
     enable = false;
@@ -44,7 +50,7 @@
           # Based on recommended settings in https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound
           harden-glue = true;
           harden-dnssec-stripped = true;
-          use-caps-for-id = false;
+          use-caps-for-id = true;
           prefetch = true;
           edns-buffer-size = 1232;
           hide-identity = true;

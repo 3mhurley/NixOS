@@ -1,4 +1,9 @@
-{ host, lib, pkgs, ... }:
+{
+  host,
+  lib,
+  pkgs,
+  ...
+}:
 let
   vars = import ../../hosts/${host}/variables.nix;
   wgIf = "wg0";
@@ -8,8 +13,8 @@ let
   wgKillSwitch = vars.wgKillSwitch or false;
   wgBypassDomains = vars.wgBypassDomains or [ ];
   wgPresharedKeyFile = vars.wgPresharedKeyFile or "";
-  wgEndpointHost = lib.head (lib.splitString ":" vars.wgServerEndpoint);
-  wgEndpointPort = lib.last (lib.splitString ":" vars.wgServerEndpoint);
+  wgEndpointHost = if vars.wgEnable then lib.head (lib.splitString ":" vars.wgServerEndpoint) else "";
+  wgEndpointPort = if vars.wgEnable then lib.last (lib.splitString ":" vars.wgServerEndpoint) else "";
 in
 {
   assertions = [
@@ -22,9 +27,6 @@ in
   ];
 
   networking = {
-    # Keep DNS pinned to local AdGuard -> Unbound chain.
-    nameservers = [ "127.0.0.1" ];
-    networkmanager.dns = "none";
     # Keep WG control plane in systemd; avoid NM creating/activating its own WG profile.
     networkmanager.unmanaged = lib.optional vars.wgEnable "interface-name:${wgIf}";
 
@@ -33,38 +35,43 @@ in
       privateKeyFile = wgKeyFile;
       # Keep endpoint reachability outside the tunnel to avoid recursive routing failures.
       postSetup = ''
-        read -r WAN_GW WAN_IF <<EOF
-$(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
-  $1 == "default" {
-    via = ""; dev = "";
-    for (i = 1; i <= NF; i++) {
-      if ($i == "via") via = $(i + 1);
-      if ($i == "dev") dev = $(i + 1);
-    }
-    if (via != "" && dev != "" && dev != "${wgIf}" && dev != "tailscale0") {
-      print via, dev;
-      exit;
-    }
-  }
-')
-EOF
-        if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ]; then
-          ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
-          # Optional split-tunnel bypasses for domains that break behind VPN exits.
-          for domain in ${lib.escapeShellArgs wgBypassDomains}; do
-            for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
-              ${pkgs.iproute2}/bin/ip -4 route replace "$ip/32" via "$WAN_GW" dev "$WAN_IF"
-            done
-          done
-        fi
+                BYPASS_FILE="/run/wireguard-bypass-ips"
+                read -r WAN_GW WAN_IF <<EOF
+        $(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
+          $1 == "default" {
+            via = ""; dev = "";
+            for (i = 1; i <= NF; i++) {
+              if ($i == "via") via = $(i + 1);
+              if ($i == "dev") dev = $(i + 1);
+            }
+            if (via != "" && dev != "" && dev != "${wgIf}" && dev != "tailscale0") {
+              print via, dev;
+              exit;
+            }
+          }
+        ')
+        EOF
+                if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ]; then
+                  ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
+                  # Resolve bypass domain IPs and stash them for clean teardown.
+                  : > "$BYPASS_FILE"
+                  for domain in ${lib.escapeShellArgs wgBypassDomains}; do
+                    for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
+                      ${pkgs.iproute2}/bin/ip -4 route replace "$ip/32" via "$WAN_GW" dev "$WAN_IF"
+                      echo "$ip" >> "$BYPASS_FILE"
+                    done
+                  done
+                fi
       '';
       postShutdown = ''
         ${pkgs.iproute2}/bin/ip -4 route del ${wgEndpointHost}/32 2>/dev/null || true
-        for domain in ${lib.escapeShellArgs wgBypassDomains}; do
-          for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
-            ${pkgs.iproute2}/bin/ip -4 route del "$ip/32" 2>/dev/null || true
-          done
-        done
+        BYPASS_FILE="/run/wireguard-bypass-ips"
+        if [ -f "$BYPASS_FILE" ]; then
+          while IFS= read -r ip; do
+            [ -n "$ip" ] && ${pkgs.iproute2}/bin/ip -4 route del "$ip/32" 2>/dev/null || true
+          done < "$BYPASS_FILE"
+          rm -f "$BYPASS_FILE"
+        fi
       '';
       peers = [
         (
@@ -85,11 +92,13 @@ EOF
       # Do not open inbound 51820 for ProtonVPN client mode.
       allowedUDPPorts = [ ];
       extraCommands = lib.mkIf (vars.wgEnable && wgKillSwitch) ''
-        # Kill switch: only allow local/tailscale/wg egress, plus Proton endpoint handshake.
-        ${pkgs.iptables}/bin/iptables -I OUTPUT -d ${wgEndpointHost} -p udp --dport ${wgEndpointPort} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I OUTPUT ! -o ${wgIf} ! -o tailscale0 \
+        # Kill switch: allow VPN endpoint handshake first, then block all non-tunnel egress.
+        # Order matters: ACCEPT must come before REJECT so the handshake isn't blocked.
+        ${pkgs.iptables}/bin/iptables -A OUTPUT -d ${wgEndpointHost} -p udp --dport ${wgEndpointPort} -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -A OUTPUT ! -o ${wgIf} ! -o tailscale0 \
           -m addrtype ! --dst-type LOCAL -j REJECT
-        ${pkgs.iptables}/bin/ip6tables -I OUTPUT ! -o ${wgIf} ! -o tailscale0 \
+        # IPv6: block non-tunnel egress (no IPv6 endpoint whitelist needed for IPv4-only ProtonVPN).
+        ${pkgs.iptables}/bin/ip6tables -A OUTPUT ! -o ${wgIf} ! -o tailscale0 \
           -m addrtype ! --dst-type LOCAL -j REJECT
       '';
       extraStopCommands = lib.mkIf (vars.wgEnable && wgKillSwitch) ''

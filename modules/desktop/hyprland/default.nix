@@ -364,7 +364,7 @@ in
                 "float on, match:class ^(com.github.rafostar.Clapper)$" # Clapper-Gtk
                 "float on, match:class ^(app.drey.Warp)$" # Warp-Gtk
                 "float on, match:class ^(net.davidotek.pupgui2)$" # ProtonUp-Qt
-                "float on, match:class ^(eog)$"# Imageviewer-Gtk
+                "float on, match:class ^(eog)$" # Imageviewer-Gtk
                 "float on, match:class ^(io.gitlab.theevilskeleton.Upscaler)$" # Upscaler-Gtk
                 "float on, match:class ^(yad)$"
                 "float on, match:class ^(pavucontrol)$"

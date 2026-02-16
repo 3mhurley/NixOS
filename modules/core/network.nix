@@ -105,6 +105,7 @@ in
     wants = [ "NetworkManager.service" ];
     serviceConfig = {
       Type = "oneshot";
+      RemainAfterExit = true;
     };
     script = ''
       set -euo pipefail

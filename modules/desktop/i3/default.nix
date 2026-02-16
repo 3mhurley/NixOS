@@ -1,4 +1,9 @@
-{ lib, pkgs, host, ... }:
+{
+  lib,
+  pkgs,
+  host,
+  ...
+}:
 let
   inherit (import ../../../hosts/${host}/variables.nix) terminal browser defaultWallpaper;
 in

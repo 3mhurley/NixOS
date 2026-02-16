@@ -22,7 +22,7 @@
       grub = {
         enable = true;
         # version = 2;
-        devices = ["nodev"];
+        devices = [ "nodev" ];
         # device = "/dev/sda";
         efiSupport = true;
         # efiInstallAsRemovable = true;

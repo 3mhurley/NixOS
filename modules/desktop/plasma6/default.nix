@@ -49,7 +49,7 @@ in
         workspace = {
           clickItemTo = "select"; # select, open
           lookAndFeel = "Catppuccin-Mocha-Mauve"; # Global Theme
-          colorScheme =  "CatppuccinMochaMauve";
+          colorScheme = "CatppuccinMochaMauve";
           theme = "default"; # Plasma Style
           cursor = {
             size = 24;
