@@ -19,13 +19,13 @@
       wants = [ "network-online.target" ];
       after = [ "network-online.target" ];
     };
-    adguardhome.serviceConfig = {
-      After = [
+    adguardhome = {
+      wants = [ "network-online.target" ];
+      after = [
         "network-online.target"
         "unbound.service"
       ];
-      Wants = [ "network-online.target" ];
-      Requires = [ "unbound.service" ];
+      requires = [ "unbound.service" ];
     };
   };
   services = {

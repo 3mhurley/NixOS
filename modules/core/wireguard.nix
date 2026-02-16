@@ -25,6 +25,8 @@ in
     # Keep DNS pinned to local AdGuard -> Unbound chain.
     nameservers = [ "127.0.0.1" ];
     networkmanager.dns = "none";
+    # Keep WG control plane in systemd; avoid NM creating/activating its own WG profile.
+    networkmanager.unmanaged = lib.optional vars.wgEnable "interface-name:${wgIf}";
 
     wireguard.interfaces.${wgIf} = lib.mkIf vars.wgEnable {
       ips = [ vars.wgAddress ];
