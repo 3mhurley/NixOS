@@ -96,7 +96,18 @@ in
   # Control boot behavior by adjusting the generated systemd unit links.
   systemd.services."wireguard-${wgIf}" = lib.mkIf (vars.wgEnable && !wgAutostart) {
     wantedBy = lib.mkForce [ ];
+    # During `nixos-rebuild switch`, avoid restart/start churn when autostart is disabled.
+    restartIfChanged = false;
+    stopIfChanged = true;
   };
+
+  # Extra guardrail: ensure rebuilds never leave wg0 active when autostart is disabled.
+  system.activationScripts.wireguardAutostartGuard = lib.mkIf (vars.wgEnable && !wgAutostart) ''
+    if systemctl is-active --quiet wireguard-${wgIf}.service; then
+      echo "Stopping wireguard-${wgIf}.service (wgAutostart=false)"
+      systemctl stop wireguard-${wgIf}.service || true
+    fi
+  '';
 
   environment.systemPackages = with pkgs; [ wireguard-tools ];
 

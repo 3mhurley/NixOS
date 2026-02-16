@@ -97,6 +97,8 @@ analyze() {
   local wg_unit_state
   local wg_nm_profiles
   local nm_resolve1_error
+  local ping_ok
+  local dns_ok
 
   default_route_count=$(grep -cE '^default ' "${LOG_FILE}" || true)
   uses_local_dns=0
@@ -128,6 +130,18 @@ analyze() {
     nm_resolve1_error=0
   fi
 
+  if awk '/^===== Ping IPv4 =====/{f=1;next}/^=====/{if(f)exit}f' "${LOG_FILE}" | grep -q '1 received'; then
+    ping_ok=1
+  else
+    ping_ok=0
+  fi
+
+  if awk '/^===== DNS resolution =====/{f=1;next}/^=====/{if(f)exit}f' "${LOG_FILE}" | grep -Eq '^[0-9a-fA-F:.]+\s+'; then
+    dns_ok=1
+  else
+    dns_ok=0
+  fi
+
   append_summary "Findings"
 
   if [ "${default_route_count}" -eq 0 ]; then
@@ -152,6 +166,16 @@ analyze() {
   if [ "${nm_resolve1_error}" -eq 1 ]; then
     append_summary "- MEDIUM: NetworkManager attempted org.freedesktop.resolve1 but systemd-resolved is unavailable."
     append_summary "  Likely fix: keep NM DNS backend consistent with your local resolver stack."
+  fi
+
+  if [ "${ping_ok}" -eq 0 ]; then
+    append_summary "- HIGH: No IPv4 reachability to 1.1.1.1."
+    append_summary "  Likely fix: check default-route owner (wg0 vs WAN) and WireGuard tunnel health."
+  fi
+
+  if [ "${dns_ok}" -eq 0 ]; then
+    append_summary "- HIGH: DNS lookup failed."
+    append_summary "  Likely fix: if resolv.conf points to localhost, verify adguardhome -> unbound upstream path."
   fi
 
   append_summary ""
