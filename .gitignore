@@ -7,6 +7,9 @@ output-*
 .vscode
 *.log
 *.tmp
+*.bak
+
+logging/
 
 [Bb]ackup
 [Bb]ackup/*
