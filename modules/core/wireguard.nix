@@ -5,7 +5,9 @@
   ...
 }:
 let
-  vars = import ../../hosts/${host}/variables.nix;
+  baseVars = import ../../hosts/${host}/variables.nix;
+  wgOverridePath = /etc/wireguard/wg-variables.nix;
+  vars = baseVars // (if builtins.pathExists wgOverridePath then import wgOverridePath else { });
   wgIf = "wg0";
   wgKeyFile = "/etc/wireguard/protonvpn-private.key";
   getentBin = "${pkgs.getent}/bin/getent";
@@ -22,7 +24,7 @@ in
       assertion =
         !vars.wgEnable
         || (vars.wgAddress != "" && vars.wgServerPublicKey != "" && vars.wgServerEndpoint != "");
-      message = "wgEnable is true, but wgAddress/wgServerPublicKey/wgServerEndpoint are not fully set in hosts/${host}/variables.nix.";
+      message = "wgEnable is true but wgAddress/wgServerPublicKey/wgServerEndpoint are not set. Create /etc/wireguard/wg-variables.nix — see hosts/${host}/wg-variables.nix.example.";
     }
   ];
 
@@ -154,6 +156,6 @@ in
   environment.systemPackages = with pkgs; [ wireguard-tools ];
 
   warnings = lib.optional (!vars.wgEnable) ''
-    Proton WireGuard is disabled for host "${host}". Set wgEnable = true in hosts/${host}/variables.nix after filling wg values.
+    Proton WireGuard is disabled for host "${host}". Create /etc/wireguard/wg-variables.nix with wgEnable = true — see hosts/${host}/wg-variables.nix.example.
   '';
 }

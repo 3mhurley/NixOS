@@ -41,7 +41,7 @@ pkgs.writeShellScriptBin "rebuild" ''
   sudo git -C "$flake" add hosts/${host}/hardware-configuration.nix
 
   # nh os switch --hostname "${host}"
-  sudo nixos-rebuild switch --flake "$flake#${host}"
+  sudo nixos-rebuild switch --impure --flake "$flake#${host}"
 
   echo
   read -rsn1 -p"$(echo -e "''${GREEN}Press any key to continue''${NC}")"

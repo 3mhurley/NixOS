@@ -27,22 +27,16 @@
   wanInterface = ""; # Optional: set e.g. "enp6s0" to pin CAKE shaping to physical WAN
 
   # WireGuard / ProtonVPN
-  wgEnable = true; # Temporary hard-disable to keep networking stable during rebuilds; re-enable when WG flow is fixed
-  wgAutostart = false; # Keep false to avoid boot-time lockouts; start WireGuard manually when needed
-  wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
-  wgBypassDomains = [
-    "discord.com"
-    "discord.gg"
-    "gateway.discord.gg"
-    "cdn.discordapp.com"
-    "media.discordapp.net"
-    "ptb.discord.com"
-    "canary.discord.com"
-  ]; # Optional split-tunnel domain bypass list (routed over WAN when wg0 is up)
-  wgPresharedKeyFile = ""; # Optional/Proton: file containing [Peer] PresharedKey
-  wgAddress = "REDACTED_ADDR"; # [Interface] Address from ProtonVPN WireGuard config, e.g. "REDACTED_ADDR"
-  wgServerPublicKey = "REDACTED_PUBKEY"; # [Peer] PublicKey from ProtonVPN WireGuard config
-  wgServerEndpoint = "REDACTED_ENDPOINT:51820"; # [Peer] Endpoint from ProtonVPN WireGuard config, e.g. "1.2.3.4:51820"
+  # Real values live in /etc/wireguard/wg-variables.nix (see wg-variables.nix.example).
+  # That file is merged at eval time by modules/core/wireguard.nix.
+  wgEnable = false;
+  wgAutostart = false;
+  wgKillSwitch = false;
+  wgBypassDomains = [ ];
+  wgPresharedKeyFile = "";
+  wgAddress = "";
+  wgServerPublicKey = "";
+  wgServerEndpoint = "";
 
   # Audio
   alsaDevice = "alsa_input.pci-0000_00_1f.3.analog-stereo";
