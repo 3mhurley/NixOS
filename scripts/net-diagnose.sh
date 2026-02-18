@@ -97,7 +97,7 @@ collect() {
   fi
 
   run "systemd NetworkManager" systemctl is-active NetworkManager
-  run "systemd wireguard-wg0" systemctl is-active wireguard-wg0
+  run "systemd wg-quick-wg0" systemctl is-active wg-quick-wg0
   run "systemd adguardhome" systemctl is-active adguardhome
   run "systemd unbound" systemctl is-active unbound
 
@@ -108,8 +108,8 @@ collect() {
     run_sh "HTTPS check" "curl -4 --max-time 5 -I https://example.com || true"
   fi
 
-  run_sh "Boot journal (network units)" "journalctl -b --no-pager -u NetworkManager -u wireguard-wg0 -u adguardhome -u unbound -n 400"
-  bash -lc "journalctl -b --no-pager -u NetworkManager -u wireguard-wg0 -u adguardhome -u unbound -n 400" >"${JOURNAL_FILE}" 2>&1 || true
+  run_sh "Boot journal (network units)" "journalctl -b --no-pager -u NetworkManager -u wg-quick-wg0 -u adguardhome -u unbound -n 400"
+  bash -lc "journalctl -b --no-pager -u NetworkManager -u wg-quick-wg0 -u adguardhome -u unbound -n 400" >"${JOURNAL_FILE}" 2>&1 || true
 }
 
 analyze() {
@@ -135,7 +135,7 @@ analyze() {
 
   if grep -A2 -F "===== systemd adguardhome =====" "${LOG_FILE}" | grep -q '^active$'; then adg_state="active"; else adg_state="inactive"; fi
   if grep -A2 -F "===== systemd unbound =====" "${LOG_FILE}" | grep -q '^active$'; then unbound_state="active"; else unbound_state="inactive"; fi
-  if grep -A2 -F "===== systemd wireguard-wg0 =====" "${LOG_FILE}" | grep -q '^active$'; then wg_unit_state="active"; else wg_unit_state="inactive"; fi
+  if grep -A2 -F "===== systemd wg-quick-wg0 =====" "${LOG_FILE}" | grep -q '^active$'; then wg_unit_state="active"; else wg_unit_state="inactive"; fi
 
   # Count only WireGuard profiles listed under "NM connections", not device state lines.
   wg_nm_profiles=$(
@@ -182,7 +182,7 @@ analyze() {
   fi
 
   if [ "${wg_nm_profiles}" -gt 0 ] && [ "${wg_unit_state}" = "active" ]; then
-    append_summary "- HIGH: Mixed WireGuard control detected (NM WireGuard profile(s) + wireguard-wg0 active)."
+    append_summary "- HIGH: Mixed WireGuard control detected (NM WireGuard profile(s) + wg-quick-wg0 active)."
     append_summary "  Likely fix: keep a single control plane for WG to avoid route/DNS flapping."
   fi
 

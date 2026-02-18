@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, inputs, ... }:
 let
   vars = import ./variables.nix;
 in
@@ -6,6 +6,7 @@ in
   imports = [
     ./hardware-configuration.nix
     ./host-packages.nix
+    inputs.sops-nix.nixosModules.sops
 
     # Core Modules (Don't change unless you know what you're doing)
     ../../modules/scripts

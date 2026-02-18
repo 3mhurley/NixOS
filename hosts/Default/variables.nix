@@ -27,12 +27,11 @@
   wanInterface = ""; # Optional: set e.g. "enp6s0" to pin CAKE shaping to physical WAN
 
   # WireGuard / ProtonVPN
-  wgEnable = false; # Set true after filling values below and creating key file in /etc/wireguard
+  wgEnable = false; # Set true after creating secrets/${hostname}/wireguard.yaml
+  wgAutostart = false; # true to start at boot, false for manual wg-toggle
   wgKillSwitch = false; # Optional: set true to block non-VPN egress when wgEnable = true
-  wgPresharedKeyFile = ""; # Optional/Proton: file containing [Peer] PresharedKey
-  wgAddress = ""; # [Interface] Address from ProtonVPN WireGuard config, e.g. "REDACTED_ADDR"
-  wgServerPublicKey = ""; # [Peer] PublicKey from ProtonVPN WireGuard config
-  wgServerEndpoint = ""; # [Peer] Endpoint from ProtonVPN WireGuard config, e.g. "1.2.3.4:51820"
+  wgBypassDomains = [ ]; # Optional split-tunnel domain bypass list (routed over WAN when wg0 is up)
+  wgPresharedKeyFile = ""; # Optional [Peer] PresharedKey file path
 
   # Audio
   alsaDevice = "alsa_input.pci-0000_00_1f.3.analog-stereo";

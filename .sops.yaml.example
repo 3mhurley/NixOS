@@ -1,0 +1,7 @@
+keys:
+  - &admin_age CHANGE_ME_AGE_RECIPIENT
+creation_rules:
+  - path_regex: ^secrets/[^/]+/wireguard\.yaml$
+    key_groups:
+      - age:
+          - *admin_age

@@ -1,133 +1,181 @@
 {
+  config,
   host,
   lib,
   pkgs,
   ...
 }:
 let
-  baseVars = import ../../hosts/${host}/variables.nix;
-  wgOverridePath = /etc/wireguard/wg-variables.nix;
-  vars = baseVars // (if builtins.pathExists wgOverridePath then import wgOverridePath else { });
+  vars = import ../../hosts/${host}/variables.nix;
   wgIf = "wg0";
-  wgKeyFile = "/etc/wireguard/protonvpn-private.key";
-  getentBin = "${pkgs.getent}/bin/getent";
+  wgEnable = vars.wgEnable or false;
   wgAutostart = vars.wgAutostart or false;
   wgKillSwitch = vars.wgKillSwitch or false;
   wgBypassDomains = vars.wgBypassDomains or [ ];
   wgPresharedKeyFile = vars.wgPresharedKeyFile or "";
-  wgEndpointHost = if vars.wgEnable then lib.head (lib.splitString ":" vars.wgServerEndpoint) else "";
-  wgEndpointPort = if vars.wgEnable then lib.last (lib.splitString ":" vars.wgServerEndpoint) else "";
-in
-{
-  assertions = [
-    {
-      assertion =
-        !vars.wgEnable
-        || (vars.wgAddress != "" && vars.wgServerPublicKey != "" && vars.wgServerEndpoint != "");
-      message = "wgEnable is true but wgAddress/wgServerPublicKey/wgServerEndpoint are not set. Create /etc/wireguard/wg-variables.nix — see hosts/${host}/wg-variables.nix.example.";
-    }
-  ];
+  wgSopsFile = ../../secrets/${host}/wireguard.yaml;
+  ageKeyFile = "/home/${vars.username}/.config/sops/age/keys.txt";
+  wgTemplateName = "wireguard-${host}-${wgIf}.conf";
+  getentBin = "${pkgs.getent}/bin/getent";
+  routeScript = pkgs.writeShellScript "wireguard-${wgIf}-routes" ''
+    set -eu
 
-  networking = {
-    # Keep WG control plane in systemd; avoid NM creating/activating its own WG profile.
-    networkmanager.unmanaged = lib.optional vars.wgEnable "interface-name:${wgIf}";
+    action="''${1:-}"
+    BYPASS_FILE="/run/wireguard-bypass-ips-${wgIf}"
+    ENDPOINT_FILE="/run/wireguard-endpoint-${wgIf}"
 
-    wireguard.interfaces.${wgIf} = lib.mkIf vars.wgEnable {
-      ips = [ vars.wgAddress ];
-      privateKeyFile = wgKeyFile;
-      # Keep endpoint reachability outside the tunnel to avoid recursive routing failures.
-      postSetup = ''
-                BYPASS_FILE="/run/wireguard-bypass-ips"
-                read -r WAN_GW WAN_IF <<EOF
-        $(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
-          $1 == "default" {
-            via = ""; dev = "";
-            for (i = 1; i <= NF; i++) {
-              if ($i == "via") via = $(i + 1);
-              if ($i == "dev") dev = $(i + 1);
-            }
-            if (via != "" && dev != "" && dev != "${wgIf}" && dev != "tailscale0") {
-              print via, dev;
-              exit;
-            }
+    case "$action" in
+      up)
+        read -r WAN_GW WAN_IF <<EOF
+    $(${pkgs.iproute2}/bin/ip -4 route show default | ${pkgs.gawk}/bin/awk '
+      $1 == "default" {
+        via = ""; dev = "";
+        for (i = 1; i <= NF; i++) {
+          if ($i == "via") via = $(i + 1);
+          if ($i == "dev") dev = $(i + 1);
+        }
+        if (via != "" && dev != "" && dev != "${wgIf}" && dev != "tailscale0") {
+          print via, dev;
+          exit;
+        }
+      }
+    ')
+    EOF
+
+        ENDPOINT="$(${pkgs.wireguard-tools}/bin/wg show ${wgIf} endpoints | ${pkgs.gawk}/bin/awk 'NR==1{print $2}')"
+        ENDPOINT_HOST="''${ENDPOINT%:*}"
+        ENDPOINT_PORT="''${ENDPOINT##*:}"
+
+        if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ] && [ -n "$ENDPOINT_HOST" ] && [ -n "$ENDPOINT_PORT" ]; then
+          ${pkgs.iproute2}/bin/ip -4 route replace "$ENDPOINT_HOST/32" via "$WAN_GW" dev "$WAN_IF"
+          printf '%s\n%s\n' "$ENDPOINT_HOST" "$ENDPOINT_PORT" > "$ENDPOINT_FILE"
+
+          : > "$BYPASS_FILE"
+          for domain in ${lib.escapeShellArgs wgBypassDomains}; do
+            for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
+              ${pkgs.iproute2}/bin/ip -4 route replace "$ip/32" via "$WAN_GW" dev "$WAN_IF"
+              echo "$ip" >> "$BYPASS_FILE"
+            done
+          done
+
+          ${
+            lib.optionalString wgKillSwitch ''
+              ${pkgs.iptables}/bin/iptables -A OUTPUT -d "$ENDPOINT_HOST" -p udp --dport "$ENDPOINT_PORT" -j ACCEPT
+              ${pkgs.iptables}/bin/iptables -A OUTPUT ! -o ${wgIf} ! -o tailscale0 \
+                -m addrtype ! --dst-type LOCAL -j REJECT
+              ${pkgs.iptables}/bin/ip6tables -A OUTPUT ! -o ${wgIf} ! -o tailscale0 \
+                -m addrtype ! --dst-type LOCAL -j REJECT
+            ''
           }
-        ')
-        EOF
-                if [ -n "$WAN_GW" ] && [ -n "$WAN_IF" ]; then
-                  ${pkgs.iproute2}/bin/ip -4 route replace ${wgEndpointHost}/32 via "$WAN_GW" dev "$WAN_IF"
-                  # Resolve bypass domain IPs and stash them for clean teardown.
-                  : > "$BYPASS_FILE"
-                  for domain in ${lib.escapeShellArgs wgBypassDomains}; do
-                    for ip in $(${getentBin} ahostsv4 "$domain" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -u); do
-                      ${pkgs.iproute2}/bin/ip -4 route replace "$ip/32" via "$WAN_GW" dev "$WAN_IF"
-                      echo "$ip" >> "$BYPASS_FILE"
-                    done
-                  done
-                fi
-      '';
-      postShutdown = ''
-        ${pkgs.iproute2}/bin/ip -4 route del ${wgEndpointHost}/32 2>/dev/null || true
-        BYPASS_FILE="/run/wireguard-bypass-ips"
+        fi
+        ;;
+      down)
+        ENDPOINT_HOST=""
+        ENDPOINT_PORT=""
+        if [ -f "$ENDPOINT_FILE" ]; then
+          ENDPOINT_HOST="$(${pkgs.coreutils}/bin/sed -n '1p' "$ENDPOINT_FILE" 2>/dev/null || true)"
+          ENDPOINT_PORT="$(${pkgs.coreutils}/bin/sed -n '2p' "$ENDPOINT_FILE" 2>/dev/null || true)"
+        fi
+
+        if [ -n "$ENDPOINT_HOST" ]; then
+          ${pkgs.iproute2}/bin/ip -4 route del "$ENDPOINT_HOST/32" 2>/dev/null || true
+        fi
+
         if [ -f "$BYPASS_FILE" ]; then
           while IFS= read -r ip; do
             [ -n "$ip" ] && ${pkgs.iproute2}/bin/ip -4 route del "$ip/32" 2>/dev/null || true
           done < "$BYPASS_FILE"
           rm -f "$BYPASS_FILE"
         fi
-      '';
-      peers = [
-        (
-          {
-            publicKey = vars.wgServerPublicKey;
-            endpoint = vars.wgServerEndpoint;
-            allowedIPs = [ "0.0.0.0/0" ];
-            persistentKeepalive = 25;
-          }
-          // lib.optionalAttrs (wgPresharedKeyFile != "") {
-            presharedKeyFile = wgPresharedKeyFile;
-          }
-        )
-      ];
+
+        ${
+          lib.optionalString wgKillSwitch ''
+            if [ -n "$ENDPOINT_HOST" ] && [ -n "$ENDPOINT_PORT" ]; then
+              ${pkgs.iptables}/bin/iptables -D OUTPUT -d "$ENDPOINT_HOST" -p udp --dport "$ENDPOINT_PORT" -j ACCEPT || true
+            fi
+            ${pkgs.iptables}/bin/iptables -D OUTPUT ! -o ${wgIf} ! -o tailscale0 \
+              -m addrtype ! --dst-type LOCAL -j REJECT || true
+            ${pkgs.iptables}/bin/ip6tables -D OUTPUT ! -o ${wgIf} ! -o tailscale0 \
+              -m addrtype ! --dst-type LOCAL -j REJECT || true
+          ''
+        }
+
+        rm -f "$ENDPOINT_FILE"
+        ;;
+      *)
+        echo "usage: $0 {up|down}" >&2
+        exit 2
+        ;;
+    esac
+  '';
+in
+{
+  assertions = [
+    {
+      assertion = !wgEnable || builtins.pathExists wgSopsFile;
+      message = "wgEnable is true but ${toString wgSopsFile} is missing.";
+    }
+  ];
+
+  sops = lib.mkIf wgEnable {
+    defaultSopsFile = wgSopsFile;
+    defaultSopsFormat = "yaml";
+    age.keyFile = ageKeyFile;
+
+    secrets = {
+      wgAddress = { };
+      wgServerPublicKey = { };
+      wgServerEndpoint = { };
+      wgPrivateKey = { };
     };
 
-    firewall = {
-      # Do not open inbound 51820 for ProtonVPN client mode.
-      allowedUDPPorts = [ ];
-      extraCommands = lib.mkIf (vars.wgEnable && wgKillSwitch) ''
-        # Kill switch: allow VPN endpoint handshake first, then block all non-tunnel egress.
-        # Order matters: ACCEPT must come before REJECT so the handshake isn't blocked.
-        ${pkgs.iptables}/bin/iptables -A OUTPUT -d ${wgEndpointHost} -p udp --dport ${wgEndpointPort} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -A OUTPUT ! -o ${wgIf} ! -o tailscale0 \
-          -m addrtype ! --dst-type LOCAL -j REJECT
-        # IPv6: block non-tunnel egress (no IPv6 endpoint whitelist needed for IPv4-only ProtonVPN).
-        ${pkgs.iptables}/bin/ip6tables -A OUTPUT ! -o ${wgIf} ! -o tailscale0 \
-          -m addrtype ! --dst-type LOCAL -j REJECT
-      '';
-      extraStopCommands = lib.mkIf (vars.wgEnable && wgKillSwitch) ''
-        ${pkgs.iptables}/bin/iptables -D OUTPUT -d ${wgEndpointHost} -p udp --dport ${wgEndpointPort} -j ACCEPT || true
-        ${pkgs.iptables}/bin/iptables -D OUTPUT ! -o ${wgIf} ! -o tailscale0 \
-          -m addrtype ! --dst-type LOCAL -j REJECT || true
-        ${pkgs.iptables}/bin/ip6tables -D OUTPUT ! -o ${wgIf} ! -o tailscale0 \
-          -m addrtype ! --dst-type LOCAL -j REJECT || true
+    templates.${wgTemplateName} = {
+      owner = "root";
+      group = "root";
+      mode = "0400";
+      content = ''
+        [Interface]
+        Address = ${config.sops.placeholder."wgAddress"}
+        PrivateKey = ${config.sops.placeholder."wgPrivateKey"}
+        PostUp = ${routeScript} up
+        PostDown = ${routeScript} down
+
+        [Peer]
+        PublicKey = ${config.sops.placeholder."wgServerPublicKey"}
+        Endpoint = ${config.sops.placeholder."wgServerEndpoint"}
+        AllowedIPs = 0.0.0.0/0
+        PersistentKeepalive = 25
+        ${
+          lib.optionalString (wgPresharedKeyFile != "")
+            "PresharedKey = ${wgPresharedKeyFile}"
+        }
       '';
     };
   };
 
-  # Coexist with strict global rp_filter from security.nix.
-  boot.kernel.sysctl."net.ipv4.conf.${wgIf}.rp_filter" = lib.mkIf vars.wgEnable 2;
+  networking = {
+    # Keep WG control plane in systemd; avoid NM creating/activating its own WG profile.
+    networkmanager.unmanaged = lib.optional wgEnable "interface-name:${wgIf}";
 
-  # `networking.wireguard.interfaces` does not expose an autostart toggle on this channel.
-  # Control boot behavior by adjusting the generated systemd unit links.
-  systemd.services."wireguard-${wgIf}" = lib.mkIf (vars.wgEnable && !wgAutostart) {
+    wg-quick.interfaces.${wgIf} = lib.mkIf wgEnable {
+      autostart = wgAutostart;
+      configFile = config.sops.templates.${wgTemplateName}.path;
+    };
+
+    firewall.allowedUDPPorts = [ ];
+  };
+
+  # Coexist with strict global rp_filter from security.nix.
+  boot.kernel.sysctl."net.ipv4.conf.${wgIf}.rp_filter" = lib.mkIf wgEnable 2;
+
+  systemd.services."wg-quick-${wgIf}" = lib.mkIf (wgEnable && !wgAutostart) {
     wantedBy = lib.mkForce [ ];
-    # During `nixos-rebuild switch`, avoid restart/start churn when autostart is disabled.
     restartIfChanged = false;
     stopIfChanged = true;
   };
 
   # Ensure WireGuard sessions do not persist across boot/switch when autostart is disabled.
-  # This runs after target activation and force-stops wg0 if it is up.
-  systemd.services."wireguard-${wgIf}-nonpersistent" = lib.mkIf (vars.wgEnable && !wgAutostart) {
+  systemd.services."wg-quick-${wgIf}-nonpersistent" = lib.mkIf (wgEnable && !wgAutostart) {
     description = "Force stop WireGuard when wgAutostart is disabled";
     wantedBy = [
       "multi-user.target"
@@ -135,27 +183,21 @@ in
     ];
     after = [
       "network.target"
-      "wireguard-${wgIf}.service"
+      "wg-quick-${wgIf}.service"
     ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = false;
     };
     script = ''
-      # Stop peer units first to avoid stop-order races being reported as failed units.
-      for unit in $(${pkgs.systemd}/bin/systemctl list-units --all --full --plain 'wireguard-${wgIf}-peer-*.service' --no-legend 2>/dev/null | ${pkgs.gawk}/bin/awk '{print $1}'); do
-        ${pkgs.systemd}/bin/systemctl stop "$unit" 2>/dev/null || true
-        ${pkgs.systemd}/bin/systemctl reset-failed "$unit" 2>/dev/null || true
-      done
-
-      ${pkgs.systemd}/bin/systemctl stop wireguard-${wgIf}.service 2>/dev/null || true
-      ${pkgs.systemd}/bin/systemctl reset-failed wireguard-${wgIf}.service 2>/dev/null || true
+      ${pkgs.systemd}/bin/systemctl stop wg-quick-${wgIf}.service 2>/dev/null || true
+      ${pkgs.systemd}/bin/systemctl reset-failed wg-quick-${wgIf}.service 2>/dev/null || true
     '';
   };
 
   environment.systemPackages = with pkgs; [ wireguard-tools ];
 
-  warnings = lib.optional (!vars.wgEnable) ''
-    Proton WireGuard is disabled for host "${host}". Create /etc/wireguard/wg-variables.nix with wgEnable = true — see hosts/${host}/wg-variables.nix.example.
+  warnings = lib.optional (!wgEnable) ''
+    Proton WireGuard is disabled for host "${host}". Configure encrypted values in secrets/${host}/wireguard.yaml and set wgEnable = true.
   '';
 }

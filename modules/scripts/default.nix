@@ -36,7 +36,7 @@ let
       set -euo pipefail
 
       iface="''${1:-wg0}"
-      unit="wireguard-''${iface}"
+      unit="wg-quick-''${iface}"
 
       run_systemctl() {
         if [ "''${EUID}" -eq 0 ]; then

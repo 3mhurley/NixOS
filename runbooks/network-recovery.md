@@ -9,7 +9,7 @@ Get deterministic data after boot so we can fix root cause instead of repeatedly
   - `/run/current-system` store path
   - `nixos-version`
 - NetworkManager connection/device/autoconnect state
-- WireGuard + DNS service health (`wireguard-wg0`, `adguardhome`, `unbound`)
+- WireGuard + DNS service health (`wg-quick-wg0`, `adguardhome`, `unbound`)
 - IPv4 routes and default route ownership
 - Resolver setup and local DNS listener checks
 - Recent boot logs for network-related services
@@ -53,14 +53,14 @@ readlink -f /run/current-system
 ## How to interpret common findings
 - `No default IPv4 route`: uplink profile is not up or route is stolen/removed.
 - `resolv.conf points to 127.0.0.1 but local DNS listener missing`: DNS chain is down (`adguardhome`/`unbound`) so internet appears broken even if link is up.
-- `Mixed WireGuard control`: both NM WireGuard profile(s) and `wireguard-wg0` systemd unit exist; this can flap routes and DNS.
+- `Mixed WireGuard control`: both NM WireGuard profile(s) and `wg-quick-wg0` systemd unit exist; this can flap routes and DNS.
 - `NetworkManager requested org.freedesktop.resolve1`: NM is trying to use systemd-resolved while it is disabled.
 
 ## Decision guide
 1. If default route is missing -> fix NM autoconnect/priority and ensure ethernet comes up first.
 2. If DNS chain is down -> fix startup ordering/health of `adguardhome` and `unbound`.
 3. If mixed WG control exists -> keep one control plane only:
-   - either systemd `wireguard-wg0` + `wg-toggle`
+   - either systemd `wg-quick-wg0` + `wg-toggle`
    - or NM profile (remove/disable the other)
 4. If NM wants resolved but resolved is disabled -> set NM DNS backend consistently (usually `networking.networkmanager.dns = "none"` when using local DNS stack).
 

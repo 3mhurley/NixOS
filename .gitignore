@@ -8,6 +8,7 @@ output-*
 *.log
 *.tmp
 *.bak
+.sops.yaml
 
 logging/
 

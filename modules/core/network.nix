@@ -122,7 +122,7 @@ in
         $nmcli_cmd connection up "$first_eth_profile" || true
       fi
 
-      # Enforce a single WireGuard control plane (systemd wireguard-wg0 + wg-toggle).
+      # Enforce a single WireGuard control plane (systemd wg-quick-wg0 + wg-toggle).
       # Remove NM WireGuard profiles so they cannot auto-activate and steal default routes.
       while IFS= read -r wg_profile; do
         [ -n "$wg_profile" ] || continue
