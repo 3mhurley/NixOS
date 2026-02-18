@@ -9,7 +9,6 @@ output-*
 *.tmp
 *.bak
 .sops.yaml
-secrets/*/wireguard.yaml
 
 logging/
 
