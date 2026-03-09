@@ -11,6 +11,10 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
     "$@"
   }
 
+  check_host() {
+    run nix eval --raw ".#nixosConfigurations.''${HOST}.config.system.build.toplevel.drvPath"
+  }
+
   pause_step() {
     read -r -p "Continue? [y/N] " ans
     [[ "''${ans:-}" =~ ^[Yy]$ ]]
@@ -29,7 +33,7 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
   cd "$FLAKE_DIR"
 
   run git status --short
-  run nix flake check --no-build
+  check_host
 
   echo
   echo "Batch A: core platform"
@@ -37,7 +41,7 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
   run nix flake update nixpkgs-stable
   run nix flake update home-manager
   run nix flake update nix-index-database
-  run nix flake check --no-build
+  check_host
   run sudo nixos-rebuild boot --flake ".#$HOST"
   echo "Reboot recommended now for kernel validation."
   pause_step || exit 0
@@ -51,7 +55,7 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
   run nix flake update nixvim
   run nix flake update nvchad4nix
   run nix flake update nur
-  run nix flake check --no-build
+  check_host
   run sudo nixos-rebuild switch --flake ".#$HOST"
   pause_step || exit 0
 
@@ -62,7 +66,7 @@ pkgs.writeShellScriptBin "upgrade-staged" ''
   run nix flake update neovim
   run nix flake update betterfox
   run nix flake update thunderbird-catppuccin
-  run nix flake check --no-build
+  check_host
   run sudo nixos-rebuild switch --flake ".#$HOST"
 
   echo
