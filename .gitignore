@@ -1,3 +1,13 @@
+# Nix build artifacts
 result
 result-*
 .direnv/
+
+# Never commit private key material.
+# Encrypted sops files (secrets/*.yaml) are intentionally NOT ignored.
+*.key
+key.txt
+*.agekey
+id_ed25519
+id_rsa
+!*.pub
