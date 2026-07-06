@@ -1,0 +1,22 @@
+# Force LF line endings for the whole repo.
+# This is deployed to NixOS/Linux; CRLF can break scripts and configs.
+* text=auto eol=lf
+
+# Explicitly keep known text types as LF
+*.nix    text eol=lf
+*.sh     text eol=lf
+*.yaml   text eol=lf
+*.yml    text eol=lf
+*.md     text eol=lf
+*.toml   text eol=lf
+*.json   text eol=lf
+*.lock   text eol=lf
+
+# Treat these as binary (never touch line endings)
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.pdf    binary
+*.gpg    binary
